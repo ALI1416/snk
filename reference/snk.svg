@@ -1,0 +1,34 @@
+<svg width="880" height="192" viewBox="0 0 880 192" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    :root {
+    --cb: #1b1f230a;
+    --cs: purple;
+    --ce: #ebedf0;
+    --c0: #ebedf0;
+    --c1: #9be9a8;
+    --c2: #40c463;
+    --c3: #30a14e;
+    --c4: #216e39
+    }
+
+    .c {
+    shape-rendering: geometricPrecision;
+    fill: var(--ce);
+    stroke-width: 1px;
+    stroke: var(--cb);
+    animation: none 51300ms linear infinite;
+    width: 12px;
+    height: 12px
+    }
+
+    .c0 {
+    fill: var(--c4);
+    }
+
+  </style>
+  <defs>
+    <rect id="r" rx="2" ry="2"/>
+  </defs>
+  <rect class="c c0" id="r" rx="2" ry="2"/>
+  <use class="c" x="2" y="18"/>
+</svg>

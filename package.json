@@ -1,0 +1,10 @@
+{
+  "name": "snk",
+  "version": "1.0.0",
+  "workspaces": [
+    "packages/**"
+  ],
+  "scripts": {
+    "build": "npm run snk"
+  }
+}
