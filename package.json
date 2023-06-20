@@ -1,10 +1,8 @@
 {
   "name": "snk",
-  "version": "1.0.0",
-  "workspaces": [
-    "packages/**"
-  ],
+  "version": "0.0.0",
   "scripts": {
+    "snk": "node script/snk.js ali1416",
     "build": "npm run snk"
   }
 }
