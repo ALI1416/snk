@@ -1,0 +1,117 @@
+<svg width="880" height="192" viewBox="0 0 880 192" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    :root {
+    --c0: #ebedf0;
+    --c1: #9be9a8;
+    --c2: #40c463;
+    --c3: #30a14e;
+    --c4: #216e39;
+    }
+
+    .p {
+    animation: none linear 5s infinite;
+    }
+
+    @keyframes p0 {
+    0% {
+    transform: scale(0, 1);
+    }
+    100% {
+    transform: scale(1, 1);
+    }
+    }
+
+    .p0 {
+    fill: var(--c0);
+    animation-name: p0;
+    transform-origin: 0 0;
+    }
+
+    @keyframes p1 {
+    0%,4% {
+    transform: scale(0, 1);
+    }
+    8%,100% {
+    transform: scale(1, 1);
+    }
+    }
+
+    .p1 {
+    fill: var(--c1);
+    animation-name: p1;
+    transform-origin: 20px 0;
+    }
+
+    @keyframes p2 {
+    0%,12% {
+    transform: scale(0, 1);
+    }
+    14%,100% {
+    transform: scale(1, 1);
+    }
+    }
+
+    .p2 {
+    fill: var(--c2);
+    animation-name: p2;
+    transform-origin: 60px 0;
+    }
+
+    @keyframes p3 {
+    0%,14% {
+    transform: scale(0, 1);
+    }
+    20%,100% {
+    transform: scale(1, 1);
+    }
+    }
+
+    .p3 {
+    fill: var(--c3);
+    animation-name: p3;
+    transform-origin: 70px 0;
+    }
+
+    @keyframes p4 {
+    0%,40% {
+    transform: scale(0, 1);
+    }
+    42%,100% {
+    transform: scale(1, 1);
+    }
+    }
+
+    .p4 {
+    fill: var(--c4);
+    animation-name: p4;
+    transform-origin: 200px 0;
+    }
+
+    @keyframes p5 {
+    0%,50% {
+    transform: scale(0, 1);
+    }
+    54%,100% {
+    transform: scale(1, 1);
+    }
+    }
+
+    .p5 {
+    fill: var(--c1);
+    animation-name: p5;
+    transform-origin: 250px 0;
+    }
+  </style>
+  <!-- 共计50段，每段10px 2% -->
+  <rect width="500" height="10" x="0" y="0" class="p p0"/>
+  <!-- 起始20px 4%，长度20px 4%，结束8% -->
+  <rect width="20" height="10" x="20" y="0" class="p p1"/>
+  <!-- 起始60px 12%，长度10px 2%，结束14% -->
+  <rect width="10" height="10" x="60" y="0" class="p p2"/>
+  <!-- 起始70px 14%，长度30px 6%，结束20% -->
+  <rect width="30" height="10" x="70" y="0" class="p p3"/>
+  <!-- 起始200px 40%，长度10px 2%，结束42% -->
+  <rect width="20" height="10" x="200" y="0" class="p p4"/>
+  <!-- 起始250px 50%，长度20px 4%，结束54% -->
+  <rect width="20" height="10" x="250" y="0" class="p p5"/>
+</svg>

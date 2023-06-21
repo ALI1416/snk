@@ -1,0 +1,112 @@
+<svg width="880" height="192" viewBox="0 0 880 192" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <rect id="r" width="10" height="10" rx="2" ry="2"/>
+  </defs>
+  <style>
+    :root{
+    --c0:#ebedf0;
+    --c1:#9be9a8;
+    --c2:#40c463;
+    --c3:#30a14e;
+    --c4:#216e39;
+    }
+    .c{
+    shape-rendering:geometricPrecision;
+    fill:var(--c0);
+    stroke-width:1px;
+    stroke:rgba(27,31,35,0.06);
+    }
+
+    .s {
+    shape-rendering: geometricPrecision;
+    fill: #800080;
+    animation: none linear 5s infinite;
+    }
+
+<!--    @keyframes s0 {-->
+
+<!--    0%,-->
+<!--    99.81% {-->
+<!--    transform: translate(0px, -16px)-->
+<!--    }-->
+
+<!--    0.19% {-->
+<!--    transform: translate(0px, 0px)-->
+<!--    }-->
+<!--    }-->
+
+    .s0 {
+    transform: translate(14px, 14px);
+    animation-name: s0
+    }
+
+<!--    .s1 {-->
+<!--    transform: translate(40px, 14px);-->
+<!--    animation-name: s1-->
+<!--    }-->
+
+<!--    .s2 {-->
+<!--    transform: translate(13px, 13px);-->
+<!--    animation-name: s2-->
+<!--    }-->
+
+<!--    .s3 {-->
+<!--    transform: translate(13px, 13px);-->
+<!--    animation-name: s3-->
+<!--    }-->
+
+  </style>
+  <use href="#r" x="0" y="0" class="c"/>
+  <use href="#r" x="0" y="14" class="c"/>
+  <use href="#r" x="0" y="28" class="c"/>
+  <use href="#r" x="0" y="42" class="c"/>
+  <use href="#r" x="0" y="56" class="c"/>
+  <use href="#r" x="0" y="70" class="c"/>
+  <use href="#r" x="0" y="84" class="c"/>
+  <use href="#r" x="14" y="0" class="c"/>
+  <use href="#r" x="14" y="14" class="c"/>
+  <use href="#r" x="14" y="28" class="c"/>
+  <use href="#r" x="14" y="42" class="c"/>
+  <use href="#r" x="14" y="56" class="c"/>
+  <use href="#r" x="14" y="70" class="c"/>
+  <use href="#r" x="14" y="84" class="c"/>
+  <use href="#r" x="28" y="0" class="c"/>
+  <use href="#r" x="28" y="14" class="c"/>
+  <use href="#r" x="28" y="28" class="c"/>
+  <use href="#r" x="28" y="42" class="c"/>
+  <use href="#r" x="28" y="56" class="c"/>
+  <use href="#r" x="28" y="70" class="c"/>
+  <use href="#r" x="28" y="84" class="c"/>
+  <use href="#r" x="42" y="0" class="c"/>
+  <use href="#r" x="42" y="14" class="c"/>
+  <use href="#r" x="42" y="28" class="c"/>
+  <use href="#r" x="42" y="42" class="c"/>
+  <use href="#r" x="42" y="56" class="c"/>
+  <use href="#r" x="42" y="70" class="c"/>
+  <use href="#r" x="42" y="84" class="c"/>
+  <use href="#r" x="56" y="0" class="c"/>
+  <use href="#r" x="56" y="14" class="c"/>
+  <use href="#r" x="56" y="28" class="c"/>
+  <use href="#r" x="56" y="42" class="c"/>
+  <use href="#r" x="56" y="56" class="c"/>
+  <use href="#r" x="56" y="70" class="c"/>
+  <use href="#r" x="56" y="84" class="c"/>
+  <use href="#r" x="70" y="0" class="c"/>
+  <use href="#r" x="70" y="14" class="c"/>
+  <use href="#r" x="70" y="28" class="c"/>
+  <use href="#r" x="70" y="42" class="c"/>
+  <use href="#r" x="70" y="56" class="c"/>
+  <use href="#r" x="70" y="70" class="c"/>
+  <use href="#r" x="70" y="84" class="c"/>
+  <use href="#r" x="84" y="0" class="c"/>
+  <use href="#r" x="84" y="14" class="c"/>
+  <use href="#r" x="84" y="28" class="c"/>
+  <use href="#r" x="84" y="42" class="c"/>
+  <use href="#r" x="84" y="56" class="c"/>
+  <use href="#r" x="84" y="70" class="c"/>
+  <use href="#r" x="84" y="84" class="c"/>
+  <rect class="s s0" x="-2" y="-2" width="14" height="14" rx="4" ry="4"/>
+  <rect class="s s1" x="-2" y="-2" width="12" height="12" rx="4" ry="4"/>
+  <rect class="s s2" x="-2" y="-2" width="10" height="10" rx="3" ry="3"/>
+  <rect class="s s3" x="-2" y="-2" width="8" height="8" rx="3" ry="3"/>
+</svg>
