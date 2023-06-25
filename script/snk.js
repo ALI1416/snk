@@ -9,6 +9,7 @@ async function generateAnimation() {
   let userName = process.argv[2]
   let year = process.argv[3]
   let array = await getGitHubContribution(userName, year)
+  // console.log(calculatePath(array))
   fs.mkdirSync('./dist/images/', {recursive: true})
   fs.writeFileSync('./dist/images/snk.svg', draw(array))
   fs.writeFileSync('./dist/images/snk.light.svg', draw(array, true))
@@ -31,6 +32,73 @@ function draw(array, light) {
 }
 
 /**
+ * 计算路径
+ */
+function calculatePath(array) {
+  // 路径[x,y,距离上一点长度,贡献级别]
+  let path = []
+  let x
+  let y
+  let level
+  let distance
+  // 找到起始点
+  for (let j = 0; j < 7; j++) {
+    let value = array[j][0]
+    if (value > -1) {
+      x = 0
+      y = j
+      level = value
+      break
+    }
+  }
+  // 计算起始点
+  if (level > 0) {
+    // 有贡献
+    path.push([y, x, 0, level])
+    array[y][0] = -2
+    distance = 0
+  } else {
+    // 无贡献
+    path.push([y, x, -1, -1])
+    distance = 1
+  }
+  // 计算剩余点
+  while (true) {
+    let nextPoint = calculateNextPoint(array, x, y, distance)
+    if (nextPoint[0] === -1) {
+      return path
+    } else {
+      path.push(nextPoint)
+      y = nextPoint[0]
+      x = nextPoint[1]
+      distance = 0
+    }
+  }
+}
+
+/**
+ * 计算下一个点
+ * @return [] x,y,距离上一点长度,贡献级别
+ */
+function calculateNextPoint(array, x, y, distance) {
+  if (distance > 53) {
+    return [-1, -1, -1, -1]
+  }
+  for (let i = -distance; i <= distance; i++) {
+    for (let j = -distance; j <= distance; j++) {
+      if ((Math.abs(i) + Math.abs(j) === distance) && ((i + x) > -1 && (j + y) > -1) && ((i + x) < 53 && (j + y) < 7)) {
+        let level = array[j + y][i + x]
+        if (level > 0) {
+          array[j + y][i + x] = -2
+          return [j + y, i + x, distance, level]
+        }
+      }
+    }
+  }
+  return calculateNextPoint(array, x, y, distance + 1)
+}
+
+/**
  * 样式
  */
 function styles(array, light) {
@@ -43,8 +111,8 @@ stroke-width:1px;
 stroke:rgba(27,31,35,0.06);
 }
 `
-  for (let i = 0; i < array.length; i++) {
-    for (let j = 0; j < array[i].length; j++) {
+  for (let i = 0; i < 7; i++) {
+    for (let j = 0; j < 53; j++) {
       let level = array[i][j]
       if (level > 0) {
         style += `.c${i}-${j}{
@@ -63,11 +131,11 @@ fill:var(--c${level});
  */
 function uses(array) {
   let use = ""
-  for (let i = 0; i < array.length; i++) {
-    for (let j = 0; j < array[i].length; j++) {
+  for (let i = 0; i < 7; i++) {
+    for (let j = 0; j < 53; j++) {
       let level = array[i][j]
       if (level > -1) {
-        use += `<use href="#r" x="${i * 14}" y="${j * 14}" class="c`
+        use += `<use href="#r" x="${j * 14}" y="${i * 14}" class="c`
         if (level === 0) {
           use += `"/>\n`
         } else {
@@ -79,45 +147,36 @@ function uses(array) {
   return use
 }
 
+const styleRootLight = `:root{
+--c0:#ebedf0;
+--c1:#9be9a8;
+--c2:#40c463;
+--c3:#30a14e;
+--c4:#216e39;
+}
+`
+
+const styleRootDark = `:root{
+--c0:#161b22;
+--c1:#0e4429;
+--c2:#006d32;
+--c3:#26a641;
+--c4:#39d353;
+}
+`
+
+const styleRootAll = styleRootLight + `@media(prefers-color-scheme:dark){\n` + styleRootDark + `}\n`
+
 /**
  * 样式root
  */
 function styleRoot(light) {
   if (typeof light === "undefined") {
-    return `:root{
---c0:#ebedf0;
---c1:#9be9a8;
---c2:#40c463;
---c3:#30a14e;
---c4:#216e39;
-}
-@media(prefers-color-scheme:dark){
-:root{
---c0:#161b22;
---c1:#0e4429;
---c2:#006d32;
---c3:#26a641;
---c4:#39d353;
-}}
-`
+    return styleRootAll
   } else if (light) {
-    return `:root{
---c0:#ebedf0;
---c1:#9be9a8;
---c2:#40c463;
---c3:#30a14e;
---c4:#216e39;
-}
-`
+    return styleRootLight
   } else {
-    return `:root{
---c0:#161b22;
---c1:#0e4429;
---c2:#006d32;
---c3:#26a641;
---c4:#39d353;
-}
-`
+    return styleRootDark
   }
 }
 
@@ -125,7 +184,7 @@ function styleRoot(light) {
  * 获取GitHub用户贡献级别
  * @param userName 用户名
  * @param year 年
- * @return number[53][7]
+ * @return number[7][53]
  */
 async function getGitHubContribution(userName, year) {
   let url = `https://api.404z.cn/api/github/contribution/${userName}`
@@ -165,5 +224,15 @@ async function getGitHubContribution(userName, year) {
     w53.push(-1)
   }
   array.push(w53)
-  return array
+  // 转置
+  let newArray = []
+  for (let j = 0; j < 7; j++) {
+    newArray[j] = []
+  }
+  for (let i = 0; i < 53; i++) {
+    for (let j = 0; j < 7; j++) {
+      newArray[j][i] = array[i][j]
+    }
+  }
+  return newArray
 }
