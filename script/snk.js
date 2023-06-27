@@ -9,11 +9,16 @@ async function generateAnimation() {
   let userName = process.argv[2]
   let year = process.argv[3]
   let array = await getGitHubContribution(userName, year)
-  // console.log(calculatePath(array))
+  // let pathLength = 0
+  // let path = calculatePath(array)
+  // for (let i = 0; i < path.length; i++) {
+  //   pathLength += path[i][2]
+  // }
+  // console.log(pathLength)
   fs.mkdirSync('./dist/images/', {recursive: true})
   fs.writeFileSync('./dist/images/snk.svg', draw(array))
-  fs.writeFileSync('./dist/images/snk.light.svg', draw(array, true))
-  fs.writeFileSync('./dist/images/snk.dark.svg', draw(array, false))
+  // fs.writeFileSync('./dist/images/snk.light.svg', draw(array, true))
+  // fs.writeFileSync('./dist/images/snk.dark.svg', draw(array, false))
 }
 
 /**
@@ -27,6 +32,11 @@ function draw(array, light) {
 `
   svg += styles(array, light)
   svg += uses(array)
+  svg+=`<rect class="s s0" x="-2" y="-2" width="14" height="14" rx="5" ry="5"/>
+<rect class="s s1" x="-1" y="-1" width="12" height="12" rx="4" ry="4"/>
+<rect class="s s2" width="10" height="10" rx="3" ry="3"/>
+<rect class="s s3" x="1" y="1" width="8" height="8" rx="3" ry="3"/>
+`
   svg += `</svg>`
   return svg
 }
@@ -39,63 +49,54 @@ function calculatePath(array) {
   let path = []
   let x
   let y
-  let level
-  let distance
-  // 找到起始点
+  // 起始点
   for (let j = 0; j < 7; j++) {
-    let value = array[j][0]
-    if (value > -1) {
+    let level = array[j][0]
+    if (level > -1) {
       x = 0
       y = j
-      level = value
+      path.push([y, x, 1, level])
+      if (level > 0) {
+        array[y][0] = -2
+      }
       break
     }
   }
-  // 计算起始点
-  if (level > 0) {
-    // 有贡献
-    path.push([y, x, 0, level])
-    array[y][0] = -2
-    distance = 0
-  } else {
-    // 无贡献
-    path.push([y, x, -1, -1])
-    distance = 1
-  }
-  // 计算剩余点
+  // 剩余点
   while (true) {
-    let nextPoint = calculateNextPoint(array, x, y, distance)
-    if (nextPoint[0] === -1) {
+    let nextPoint = calculatePathNextPoint(array, x, y, 1)
+    y = nextPoint[0]
+    x = nextPoint[1]
+    if (y === -1) {
       return path
     } else {
       path.push(nextPoint)
-      y = nextPoint[0]
-      x = nextPoint[1]
-      distance = 0
     }
   }
 }
 
 /**
- * 计算下一个点
+ * 计算路径下一个点
  * @return [] x,y,距离上一点长度,贡献级别
  */
-function calculateNextPoint(array, x, y, distance) {
+function calculatePathNextPoint(array, x, y, distance) {
   if (distance > 53) {
     return [-1, -1, -1, -1]
   }
   for (let i = -distance; i <= distance; i++) {
     for (let j = -distance; j <= distance; j++) {
-      if ((Math.abs(i) + Math.abs(j) === distance) && ((i + x) > -1 && (j + y) > -1) && ((i + x) < 53 && (j + y) < 7)) {
-        let level = array[j + y][i + x]
+      let xx = i + x
+      let yy = j + y
+      if ((xx > -1 && yy > -1) && (xx < 53 && yy < 7) && (Math.abs(i) + Math.abs(j) === distance)) {
+        let level = array[yy][xx]
         if (level > 0) {
-          array[j + y][i + x] = -2
-          return [j + y, i + x, distance, level]
+          array[yy][xx] = -2
+          return [yy, xx, distance, level]
         }
       }
     }
   }
-  return calculateNextPoint(array, x, y, distance + 1)
+  return calculatePathNextPoint(array, x, y, distance + 1)
 }
 
 /**
