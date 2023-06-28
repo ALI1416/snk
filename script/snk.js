@@ -32,7 +32,7 @@ function draw(array, light) {
 `
   svg += styles(array, light)
   svg += uses(array)
-  svg+=`<rect class="s s0" x="-2" y="-2" width="14" height="14" rx="5" ry="5"/>
+  svg += `<rect class="s s0" x="-2" y="-2" width="14" height="14" rx="5" ry="5"/>
 <rect class="s s1" x="-1" y="-1" width="12" height="12" rx="4" ry="4"/>
 <rect class="s s2" width="10" height="10" rx="3" ry="3"/>
 <rect class="s s3" x="1" y="1" width="8" height="8" rx="3" ry="3"/>
@@ -42,10 +42,10 @@ function draw(array, light) {
 }
 
 /**
- * 计算路径
+ * 获取路径
+ * @return [][] x,y,贡献级别
  */
-function calculatePath(array) {
-  // 路径[x,y,距离上一点长度,贡献级别]
+function getPath(array) {
   let path = []
   let x
   let y
@@ -55,7 +55,7 @@ function calculatePath(array) {
     if (level > -1) {
       x = 0
       y = j
-      path.push([y, x, 1, level])
+      path.push([y, x, level])
       if (level > 0) {
         array[y][0] = -2
       }
@@ -64,24 +64,63 @@ function calculatePath(array) {
   }
   // 剩余点
   while (true) {
-    let nextPoint = calculatePathNextPoint(array, x, y, 1)
+    let nextPoint = getNextPath(array, x, y, 1, 'down')
     y = nextPoint[0]
-    x = nextPoint[1]
     if (y === -1) {
       return path
     } else {
+      x = nextPoint[1]
       path.push(nextPoint)
     }
   }
+  // 结束点
 }
 
 /**
- * 计算路径下一个点
- * @return [] x,y,距离上一点长度,贡献级别
+ * 获取下一个路径
+ * @return [] x,y,贡献级别
  */
-function calculatePathNextPoint(array, x, y, distance) {
+function getNextPath(array, x, y, distance, direction) {
+  // 规则0：不能直接后退，必须绕道
+  // 规则1：距离相等时优先级：1.正前方、2.前右侧、3.前左侧、4.右侧、5.左侧、6.后右侧、7.后左侧、8.正后方(绕道优先级：1.右侧、2.左侧)[参考系：前进方向]
+  // 规则2：需要转弯时，先向前方走(如果需要)，再转弯
+  // 示例：
+  // distance=1
+  // 2↓3 1 x↓x 2 ←↓ 3 ↓→
+  // x1x   x↓x   xx   xx
+  // distance=2
+  // x6x7x   xx↓xx   xxxxx   xxxxx   xxxxx   xxxxx   x↑xxx   xxx↑x
+  // 4x↓x5 1 xx↓xx 2 xx↓xx 3 xx↓xx 4 ←←↓xx 5 xx↓→→ 6 x←↓xx 7 xx↓→x
+  // x2x3x   xx↓xx   x←↓xx   xx↓→x   xxxxx   xxxxx   xxxxx   xxxxx
+  // xx1xx   xx↓xx   xxxxx   xxxxx   xxxxx   xxxxx   xxxxx   xxxxx
+  // distance=3
+  // x8xAx9x 8 x↑xxxxx 9 xxxxx↑x A xx↑→xxx
+  // 6xx↓xx7   x←←↓xxx   xxx↓→→x   xx←↓xxx
+  // x4xxx5x   xxxxxxx   xxxxxxx   xxxxxxx
+  // xx2x3xx   xxxxxxx   xxxxxxx   xxxxxxx
+  // xxx1xxx   xxxxxxx   xxxxxxx   xxxxxxx
+  // distance=4
+  // xxxExFxxx
+  // xxCxGxDxx
+  // xAxxxxxBx
+  // 8xxx↓xxx9
+  // x6xxxxx7x
+  // xx4xxx5xx
+  // xxx2x3xxx
+  // xxxx1xxxx
+  // distance=5
+  // xxxxIxJxxxx
+  // xxxGxKxHxxx
+  // xxExxxxxFxx
+  // xCxxxxxxxDx
+  // Axxxx↓xxxxB
+  // x8xxxxxxx9x
+  // xx6xxxxx7xx
+  // xxx4xxx5xxx
+  // xxxx2x3xxxx
+  // xxxxx1xxxxx
   if (distance > 53) {
-    return [-1, -1, -1, -1]
+    return [-1, -1, -1]
   }
   for (let i = -distance; i <= distance; i++) {
     for (let j = -distance; j <= distance; j++) {
@@ -96,7 +135,29 @@ function calculatePathNextPoint(array, x, y, distance) {
       }
     }
   }
-  return calculatePathNextPoint(array, x, y, distance + 1)
+  return getNextPath(array, x, y, distance + 1)
+}
+
+/**
+ * 获取点
+ * @return [][] x,y
+ */
+function getPoint(x, y, distance, direction) {
+  switch (direction) {
+    default:
+    case 'down': {
+      return []
+    }
+    case 'up': {
+      return []
+    }
+    case 'right': {
+      return []
+    }
+    case 'left': {
+      return []
+    }
+  }
 }
 
 /**
