@@ -114,16 +114,16 @@ function getIntermediatePath(x1, y1, x2, y2, direction) {
     if (x > 0) {
       // 前进 (1,0) (2,0) (3,0)
       for (let i = 1; i < x; i++) {
-        path.push([x1 + i, y1, 0])
+        path.push([i, 0, 0])
       }
     }
     // 正后方 G(-2,0)
     else {
       // 右转 (0,-1)
-      path.push([x1, y1 - 1, 0])
+      path.push([0, -1, 0])
       // 倒退 (-1,-1) (-2,-1)
       for (let i = 1; i < -x + 1; i++) {
-        path.push([x1 - i, y1 - 1, 0])
+        path.push([-i, -1, 0])
       }
     }
   }
@@ -133,14 +133,14 @@ function getIntermediatePath(x1, y1, x2, y2, direction) {
     if (y > 0) {
       // 左转并前进 (0,1) (0,2) (0,3)
       for (let i = 1; i < y; i++) {
-        path.push([x1, y1 + i, 0])
+        path.push([0, i, 0])
       }
     }
     // 右侧 8(0,-4)
     else {
       // 右转并前进 (0,-1) (0,-2) (0,-3)
       for (let i = 1; i < -y; i++) {
-        path.push([x1, y1 - i, 0])
+        path.push([0, -i, 0])
       }
     }
   }
@@ -148,20 +148,20 @@ function getIntermediatePath(x1, y1, x2, y2, direction) {
   else if (x > 0) {
     // 前进 32(1,0) (2,0) (3,0) / 54(1,0) (2,0) / 76(1,0)
     for (let i = 1; i < x + 1; i++) {
-      path.push([x1 + i, y1, 0])
+      path.push([i, 0, 0])
     }
     // 前左侧
     if (y > 0) {
       // 左转并前进 3null / 5(2,1) / 7(1,1) (1,2)
       for (let i = 1; i < y; i++) {
-        path.push([x1 + x, y1 + i, 0])
+        path.push([x, i, 0])
       }
     }
     // 前右侧
     else {
       // 右转并前进 2null / 4(2,-1) / 6(1,-1) (1,-2)
       for (let i = 1; i < -y; i++) {
-        path.push([x1 + x, y1 - i, 0])
+        path.push([x, -i, 0])
       }
     }
   }
@@ -171,19 +171,19 @@ function getIntermediatePath(x1, y1, x2, y2, direction) {
     if (y > 0) {
       // 左转并前进 B(0,1) (0,2) (0,3) / D(0,1) (0,2) / F(0,1)
       for (let i = 1; i < y + 1; i++) {
-        path.push([x1, y1 + i, 0])
+        path.push([0, i, 0])
       }
     }
     // 后右侧
     else {
       // 右转并前进 A(0,-1) (0,-2) (0,-3) / C(0,-1) (0,-2) / E(0,-1)
       for (let i = 1; i < -y + 1; i++) {
-        path.push([x1, y1 - i, 0])
+        path.push([0, -i, 0])
       }
     }
     // 倒退 Bnull / D(-1,2) / F(-1,1) (-2,1) / Anull / C(-1,-2) / E(-1,-1) (-2,-1)
     for (let i = 1; i < -x; i++) {
-      path.push([x1 - i, y1 + y, 0])
+      path.push([-i, y, 0])
     }
   }
   switch (direction) {
