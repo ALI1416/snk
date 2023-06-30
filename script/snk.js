@@ -1,6 +1,6 @@
 const fs = require('fs')
 
-generateAnimation()
+// generateAnimation()
 
 /**
  * 生成动画
@@ -71,106 +71,178 @@ function getPath(array) {
       direction = getDirection(x1, y1, x2, y2)
     }
     let nextPoint = getNextPoint(array, x, y, 1, direction)
-    console.log(nextPoint)
     y = nextPoint[0]
     if (y === -1) {
       return path
     } else {
       x = nextPoint[1]
-      pushPath(path, x, y, direction)
+      let pathLength = path.length
+      let x1 = path[pathLength - 1][0]
+      let y1 = path[pathLength - 1][1]
+      path.push(...getIntermediatePath(x1, y1, x, y, direction))
       path.push(nextPoint)
     }
   }
   // 结束点
 }
 
+console.log(getIntermediatePath(0, 0, -2, 0, 'down'))
+
 /**
- * 添加中间路径(不包含起始点和结束点)
+ * 获取中间路径(不包含起始点和结束点)
  */
-function pushPath(path, x2, y2, direction) {
-  let pathLength = path.length
-  let x1 = path[pathLength - 1][0]
-  let y1 = path[pathLength - 1][1]
+function getIntermediatePath(x1, y1, x2, y2, direction) {
+  let path = []
   let x = x2 - x1
   let y = y2 - y1
+  if (x === 0 && y === 0) {
+    return path;
+  }
+  // down
+  // 432101234
+  // xxxExFxxx -3
+  // xxCxGxDxx -2
+  // xAxxxxxBx -1
+  // 8xxx↓xxx9 0
+  // x6xxxxx7x 1
+  // xx4xxx5xx 2
+  // xxx2x3xxx 3
+  // xxxx1xxxx 4
   // 正前后方
   if (y === 0) {
-    // 正前方
+    // 正前方 1(4,0)
     if (x > 0) {
-      // 前进
+      // 前进 (1,0) (2,0) (3,0)
       for (let i = 1; i < x; i++) {
-        path.push([x1 + i, y, 0])
+        path.push([x1 + i, y1, 0])
       }
     }
-    // 正后方
+    // 正后方 G(-2,0)
     else {
-      // 右转
-      path.push([x1, y - 1, 0])
-      // 倒退
-      for (let i = 1; i < -x; i++) {
-        path.push([x1 - i, y - 1, 0])
+      // 右转 (0,-1)
+      path.push([x1, y1 - 1, 0])
+      // 倒退 (-1,-1) (-2,-1)
+      for (let i = 1; i < -x + 1; i++) {
+        path.push([x1 - i, y1 - 1, 0])
       }
     }
   }
   // 左右侧
   else if (x === 0) {
-    // 左侧
+    // 左侧 9(0,4)
     if (y > 0) {
-      // 左转并前进
+      // 左转并前进 (0,1) (0,2) (0,3)
       for (let i = 1; i < y; i++) {
-        path.push([x1, y + i, 0])
+        path.push([x1, y1 + i, 0])
       }
     }
-    // 右侧
+    // 右侧 8(0,-4)
     else {
-      // 右转并前进
+      // 右转并前进 (0,-1) (0,-2) (0,-3)
       for (let i = 1; i < -y; i++) {
-        path.push([x1, y - i, 0])
+        path.push([x1, y1 - i, 0])
       }
     }
   }
-  // 前左右侧
+  // 前左右侧 3(3,1) 2(3,-1) / 5(2,2) 4(2,-2) / 7(1,3) 6(1,-3)
   else if (x > 0) {
-    // 前进
-    for (let i = 1; i < x; i++) {
-      path.push([x1 + i, y, 0])
+    // 前进 32(1,0) (2,0) (3,0) / 54(1,0) (2,0) / 76(1,0)
+    for (let i = 1; i < x + 1; i++) {
+      path.push([x1 + i, y1, 0])
     }
     // 前左侧
-    if (y < 0) {
-      // 左转并前进
+    if (y > 0) {
+      // 左转并前进 3null / 5(2,1) / 7(1,1) (1,2)
       for (let i = 1; i < y; i++) {
-        path.push([x1, y + i, 0])
+        path.push([x1 + x, y1 + i, 0])
       }
     }
     // 前右侧
     else {
-      // 右转并前进
+      // 右转并前进 2null / 4(2,-1) / 6(1,-1) (1,-2)
       for (let i = 1; i < -y; i++) {
-        path.push([x1, y - i, 0])
+        path.push([x1 + x, y1 - i, 0])
       }
     }
   }
-  // 后左右侧
+  // 后左右侧 B(-1,3) A(-1,-3) / D(-2,2) C(-2,-2) / F(-3,1) E(-3,-1)
   else {
     // 后左侧
-    if (y < 0) {
-      // 左转并前进
-      for (let i = 1; i < y; i++) {
-        path.push([x1, y + i, 0])
+    if (y > 0) {
+      // 左转并前进 B(0,1) (0,2) (0,3) / D(0,1) (0,2) / F(0,1)
+      for (let i = 1; i < y + 1; i++) {
+        path.push([x1, y1 + i, 0])
       }
     }
     // 后右侧
     else {
-      // 右转并前进
-      for (let i = 1; i < -y; i++) {
-        path.push([x1, y - i, 0])
+      // 右转并前进 A(0,-1) (0,-2) (0,-3) / C(0,-1) (0,-2) / E(0,-1)
+      for (let i = 1; i < -y + 1; i++) {
+        path.push([x1, y1 - i, 0])
       }
     }
-    // 倒退
+    // 倒退 Bnull / D(-1,2) / F(-1,1) (-2,1) / Anull / C(-1,-2) / E(-1,-1) (-2,-1)
     for (let i = 1; i < -x; i++) {
-      path.push([x1 - i, y - 1, 0])
+      path.push([x1 - i, y1 + y, 0])
     }
   }
+  switch (direction) {
+    // 432101234
+    // xxxExFxxx -3
+    // xxCxGxDxx -2
+    // xAxxxxxBx -1
+    // 8xxx↓xxx9 0
+    // x6xxxxx7x 1
+    // xx4xxx5xx 2
+    // xxx2x3xxx 3
+    // xxxx1xxxx 4
+    case 'down': {
+      for (let p of path) {
+        p[0] = x1 + p[0]
+        p[1] = y1 + p[1]
+      }
+      break
+    }
+    // 432101234
+    // xxxx1xxxx -4
+    // xxx3x2xxx -3
+    // xx5xxx4xx -2
+    // x7xxxxx6x -1
+    // 9xxx↑xxx8 0
+    // xBxxxxxAx 1
+    // xxDxGxCxx 2
+    // xxxFxExxx 3
+    case 'up': {
+      break
+    }
+    // 32101234
+    // xxx9xxxx -4
+    // xxBx7xxx -3
+    // xDxxx5xx -2
+    // Fxxxxx3x -1
+    // xGx→xxx1 0
+    // Exxxxx2x 1
+    // xCxxx4xx 2
+    // xxAx6xxx 3
+    // xxx8xxxx 4
+    case 'right': {
+      break
+    }
+    // 43210123
+    // xxxx8xxx -4
+    // xxx6xAxx -3
+    // xx4xxxCx -2
+    // x2xxxxxE -1
+    // 1xxx←xGx 0
+    // x3xxxxxF 1
+    // xx5xxxDx 2
+    // xxx7xBxx 3
+    // xxxx9xxx 4
+    case 'left': {
+      break
+    }
+  }
+  return path
 }
 
 /**
@@ -260,8 +332,37 @@ function getNextPoint(array, x, y, distance, direction) {
  * @return [][] x,y
  */
 function getPoint(x, y, distance, direction) {
-  // distance=4
   let array = []
+  // down
+  // 432101234
+  // xxxExFxxx -3
+  // xxCxGxDxx -2
+  // xAxxxxxBx -1
+  // 8xxx↓xxx9 0
+  // x6xxxxx7x 1
+  // xx4xxx5xx 2
+  // xxx2x3xxx 3
+  // xxxx1xxxx 4
+  // 正前方 1(4,0)
+  array.push([distance, 0])
+  // 左右侧 2-9
+  for (let i = 0; i < distance; i++) {
+    // 右侧 2(3,-1) 4(2,-2) 6(1,-3) 8(0,-4)
+    array.push([distance - i - 1, -i - 1])
+    // 左侧 3(3,1) 5(2,2) 7(1,3) 9(0,4)
+    array.push([distance - i - 1, i + 1])
+  }
+  // 后方左右侧 A-F
+  for (let i = 0; i < distance - 1; i++) {
+    // 右侧 A(-1,-3) C(-2,-2) E(-3,-1)
+    array.push([-i - 1, -(distance - i - 1)])
+    // 左侧 B(-1,3) D(-2,2) F(-3,1)
+    array.push([-(i + 1), +(distance - i - 1)])
+  }
+  // 正后方 G(-2,0)
+  if (distance > 2) {
+    array.push([-(distance - 2), 0])
+  }
   switch (direction) {
     // 432101234
     // xxxExFxxx -3
@@ -273,27 +374,11 @@ function getPoint(x, y, distance, direction) {
     // xxx2x3xxx 3
     // xxxx1xxxx 4
     case 'down': {
-      // 正前方 1(4,0)
-      array.push([x + distance, y])
-      // 左右侧 2-9
-      for (let i = 0; i < distance; i++) {
-        // 右侧 2(3,-1) 4(2,-2) 6(1,-3) 8(0,-4)
-        array.push([x + (distance - i - 1), y - (i + 1)])
-        // 左侧 3(3,1) 5(2,2) 7(1,3) 9(0,4)
-        array.push([x + (distance - i - 1), y + (i + 1)])
+      for (let a of array) {
+        a[0] = x + a[0]
+        a[1] = y + a[1]
       }
-      // 后方左右侧 A-F
-      for (let i = 0; i < distance - 1; i++) {
-        // 右侧 A(-1,-3) C(-2,-2) E(-3,-1)
-        array.push([x - (i + 1), y - (distance - i - 1)])
-        // 左侧 B(-1,3) D(-2,2) F(-3,1)
-        array.push([x - (i + 1), y + (distance - i - 1)])
-      }
-      // 正后方 G(-2,0)
-      if (distance > 2) {
-        array.push([x - (distance - 2), y])
-      }
-      return array
+      break
     }
     // 432101234
     // xxxx1xxxx -4
@@ -305,27 +390,11 @@ function getPoint(x, y, distance, direction) {
     // xxDxGxCxx 2
     // xxxFxExxx 3
     case 'up': {
-      // 正前方 1(-4,0)
-      array.push([x - distance, y])
-      // 左右侧 2-9
-      for (let i = 0; i < distance; i++) {
-        // 右侧 2(-3,1) 4(-2,2) 6(-1,3) 8(0,4)
-        array.push([x - (distance - i - 1), y + (i + 1)])
-        // 左侧 3(-3,-1) 5(-2,-2) 7(-1,-3) 9(0,-4)
-        array.push([x - (distance - i - 1), y - (i + 1)])
+      for (let a of array) {
+        a[0] = x - a[0]
+        a[1] = y - a[1]
       }
-      // 后方左右侧 A-F
-      for (let i = 0; i < distance - 1; i++) {
-        // 右侧 A(1,3) C(2,2) E(3,1)
-        array.push([x + (i + 1), y + (distance - i - 1)])
-        // 左侧 B(1,-3) D(2,-2) F(3,-1)
-        array.push([x + (i + 1), y - (distance - i - 1)])
-      }
-      // 正后方 G(2,0)
-      if (distance > 2) {
-        array.push([x + (distance - 2), y])
-      }
-      return array
+      break
     }
     // 32101234
     // xxx9xxxx -4
@@ -338,27 +407,12 @@ function getPoint(x, y, distance, direction) {
     // xxAx6xxx 3
     // xxx8xxxx 4
     case 'right': {
-      // 正前方 1(0,4)
-      array.push([x, y + distance])
-      // 左右侧 2-9
-      for (let i = 0; i < distance; i++) {
-        // 右侧 2(1,3) 4(2,2) 6(3,1) 8(4,0)
-        array.push([x + (i + 1), y + (distance - i - 1)])
-        // 右侧 3(-1,3) 5(-2,2) 7(-3,1) 9(-4,0)
-        array.push([x - (i + 1), y + (distance - i - 1)])
+      for (let a of array) {
+        let temp = a[0]
+        a[0] = x - a[1]
+        a[1] = y + temp
       }
-      // 后方左右侧 A-F
-      for (let i = 0; i < distance - 1; i++) {
-        // 右侧 A(3,-1) C(2,-2) E(1,-3)
-        array.push([x + (distance - i - 1), y - (i + 1)])
-        // 右侧 B(-3,-1) D(-2,-2) F(-1,-3)
-        array.push([x - (distance - i - 1), y - (i + 1)])
-      }
-      // 正后方 G(0,-2)
-      if (distance > 2) {
-        array.push([x, y - (distance - 2)])
-      }
-      return array
+      break
     }
     // 43210123
     // xxxx8xxx -4
@@ -371,29 +425,15 @@ function getPoint(x, y, distance, direction) {
     // xxx7xBxx 3
     // xxxx9xxx 4
     case 'left': {
-      // 正前方 1(0,-4)
-      array.push([x, y - distance])
-      // 左右侧 2-9
-      for (let i = 0; i < distance; i++) {
-        // 右侧 2(-1,-3) 4(-2,-2) 6(-3,-1) 8(-4,0)
-        array.push([x - (i + 1), y - (distance - i - 1)])
-        // 右侧 3(1,-3) 5(2,-2) 7(3,-1) 9(4,0)
-        array.push([x + (i + 1), y - (distance - i - 1)])
+      for (let a of array) {
+        let temp = a[0]
+        a[0] = x + a[1]
+        a[1] = y - temp
       }
-      // 后方左右侧 A-F
-      for (let i = 0; i < distance - 1; i++) {
-        // 右侧 A(-3,1) C(-2,2) E(-1,3)
-        array.push([x - (distance - i - 1), y + (i + 1)])
-        // 右侧 B(3,1) D(2,2) F(1,3)
-        array.push([x + (distance - i - 1), y + (i + 1)])
-      }
-      // 正后方 G(0,2)
-      if (distance > 2) {
-        array.push([x, y + (distance - 2)])
-      }
-      return array
+      break
     }
   }
+  return array
 }
 
 /**
