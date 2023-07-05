@@ -47,15 +47,15 @@ function getPath(array) {
   let y
   let direction
   // 起始点
-  for (let j = 0; j < 7; j++) {
-    let level = array[j][0]
+  for (let i = 0; i < 7; i++) {
+    let level = array[i][0]
     if (level > -1) {
-      x = 0
-      y = j
+      x = i
+      y = 0
       direction = 'down'
-      path.push([y, x, level])
+      path.push([x, y, level])
       if (level > 0) {
-        array[y][0] = -2
+        array[x][0] = -2
       }
       break
     }
@@ -71,11 +71,11 @@ function getPath(array) {
       direction = getDirection(x1, y1, x2, y2)
     }
     let nextPoint = getNextPoint(array, x, y, 1, direction)
-    y = nextPoint[0]
-    if (y === -1) {
+    x = nextPoint[0]
+    if (x === -1) {
       return path
     } else {
-      x = nextPoint[1]
+      y = nextPoint[1]
       let pathLength = path.length
       let x1 = path[pathLength - 1][0]
       let y1 = path[pathLength - 1][1]
@@ -86,7 +86,7 @@ function getPath(array) {
   // 结束点
 }
 
-console.log(getIntermediatePath(0, 0, -2, 0, 'down'))
+console.log(getIntermediatePath(0, 9, 1, 8, 'down'))
 
 /**
  * 获取中间路径(不包含起始点和结束点)
@@ -97,6 +97,25 @@ function getIntermediatePath(x1, y1, x2, y2, direction) {
   let y = y2 - y1
   if (x === 0 && y === 0) {
     return path;
+  }
+  // 修正xy
+  switch (direction) {
+    case 'up': {
+      x = -x
+      break
+    }
+    case 'right': {
+      let temp = x
+      x = y
+      y = temp
+      break
+    }
+    case 'left': {
+      let temp = x
+      x = -y
+      y = temp
+      break
+    }
   }
   // down
   // 432101234
@@ -213,6 +232,10 @@ function getIntermediatePath(x1, y1, x2, y2, direction) {
     // xxDxGxCxx 2
     // xxxFxExxx 3
     case 'up': {
+      for (let p of path) {
+        p[0] = x1 - p[0]
+        p[1] = y1 - p[1]
+      }
       break
     }
     // 32101234
@@ -226,6 +249,11 @@ function getIntermediatePath(x1, y1, x2, y2, direction) {
     // xxAx6xxx 3
     // xxx8xxxx 4
     case 'right': {
+      for (let p of path) {
+        let temp = p[0]
+        p[0] = x1 - p[1]
+        p[1] = y1 + temp
+      }
       break
     }
     // 43210123
@@ -239,6 +267,11 @@ function getIntermediatePath(x1, y1, x2, y2, direction) {
     // xxx7xBxx 3
     // xxxx9xxx 4
     case 'left': {
+      for (let p of path) {
+        let temp = p[0]
+        p[0] = x1 + p[1]
+        p[1] = y1 - temp
+      }
       break
     }
   }
@@ -316,11 +349,11 @@ function getNextPoint(array, x, y, distance, direction) {
   for (let p of point) {
     let px = p[0]
     let py = p[1]
-    if ((px > -1 && py > -1) && (px < 53 && py < 7)) {
-      let level = array[py][px]
+    if ((px > -1 && py > -1) && (px < 7 && py < 53)) {
+      let level = array[px][py]
       if (level > 0) {
-        array[py][px] = -2
-        return [py, px, level]
+        array[px][py] = -2
+        return [px, py, level]
       }
     }
   }
