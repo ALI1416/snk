@@ -6,61 +6,159 @@ generateAnimation()
  * 生成动画
  */
 async function generateAnimation() {
-  let userName = process.argv[2]
-  let year = process.argv[3]
-  let array = await getGitHubContribution(userName, year)
-  let path = getPath(array)
-  console.log(path)
-  // fs.mkdirSync('./dist/images/', {recursive: true})
-  // fs.writeFileSync('./dist/images/snk.svg', draw(array))
-  // fs.writeFileSync('./dist/images/snk.light.svg', draw(array, true))
-  // fs.writeFileSync('./dist/images/snk.dark.svg', draw(array, false))
+  const userName = process.argv[2]
+  const year = process.argv[3]
+  const array = await getGitHubContribution(userName, year)
+  const [startBlankCount, endBlankCount] = getBlankCount(array)
+  const path = getPath(array, startBlankCount, endBlankCount)
+  let svg = `${svgHeader}
+<style>
+${getStyleRoot()}
+${getRectStyle(path, startBlankCount, endBlankCount)}
+</style>
+${getRectTag(array)}
+${svgFooter}
+`
+  fs.mkdirSync('./dist/images/', {recursive: true})
+  fs.writeFileSync('./dist/images/snk.svg', svg)
 }
 
 /**
- * 绘制
+ * SVG头部
  */
-function draw(array, light) {
-  let svg = `<svg width="880" height="192" viewBox="0 0 880 192" xmlns="http://www.w3.org/2000/svg">
+const svgHeader = `<svg width="880" height="192" viewBox="0 0 880 192" xmlns="http://www.w3.org/2000/svg">
 <defs>
+<clipPath id="cp">
+<rect x="-2" y="-2" width="98" height="98"/>
+</clipPath>
 <rect id="r" width="10" height="10" rx="2" ry="2"/>
-</defs>
-`
-  svg += styles(array, light)
-  svg += uses(array)
-  svg += `<rect class="s s0" x="-2" y="-2" width="14" height="14" rx="5" ry="5"/>
+</defs>`
+/**
+ * SVG尾部
+ */
+const svgFooter = `<g clip-path="url(#cp)">
+<rect class="s s0" x="-2" y="-2" width="14" height="14" rx="5" ry="5"/>
 <rect class="s s1" x="-1" y="-1" width="12" height="12" rx="4" ry="4"/>
 <rect class="s s2" width="10" height="10" rx="3" ry="3"/>
 <rect class="s s3" x="1" y="1" width="8" height="8" rx="3" ry="3"/>
-`
-  svg += `</svg>`
-  return svg
+</g>
+</svg>`
+
+/**
+ * 根样式-亮
+ */
+const styleRootLight = `:root{--c0:#ebedf0;--c1:#9be9a8;--c2:#40c463;--c3:#30a14e;--c4:#216e39}`
+/**
+ * 根样式-黑
+ */
+const styleRootDark = `:root{--c0:#161b22;--c1:#0e4429;--c2:#006d32;--c3:#26a641;--c4:#39d353}`
+/**
+ * 根样式-亮黑
+ */
+const styleRootAll = `${styleRootLight}@media(prefers-color-scheme:dark){${styleRootDark}}`
+
+/**
+ * 获取根样式
+ */
+function getStyleRoot(light) {
+  if (typeof light === "undefined") {
+    return styleRootAll
+  } else if (light) {
+    return styleRootLight
+  } else {
+    return styleRootDark
+  }
+}
+
+/**
+ * 获取方块样式
+ */
+function getRectStyle(path, startBlankCount, endBlankCount) {
+  let pathLength = path.length
+  // 开始前暂停5帧+蛇头从左上角到起始点帧数+方块内运动帧数+蛇尾从结束点到右下角帧数+蛇长4帧+结束后暂停5帧
+  const frame = 14 + startBlankCount + endBlankCount + pathLength
+  let style = `.c{shape-rendering:geometricPrecision;fill:var(--c0);stroke-width:1px;stroke:rgba(27,31,35,0.06);animation:none linear ${frame}00ms infinite}\n`
+  for (let i = 0; i < pathLength; i++) {
+    let x = path[i][0]
+    let y = path[i][1]
+    let level = path[i][2]
+    if (level > 0) {
+      let name = `c${x}-${y}`
+      // 开始前暂停5帧+蛇头从左上角到起始点帧数+1
+      let percent = (100 * (6 + startBlankCount + i) / frame).toFixed(2)
+      style += `@keyframes ${name}{0%,${percent}%,100%{fill:var(--c${level})}${percent}1%,99.999%{fill:var(--c0)}}.${name}{animation-name:${name}}\n`
+    }
+  }
+  return style
+}
+
+/**
+ * 获取方块标签
+ */
+function getRectTag(array) {
+  let tag = ""
+  for (let i = 0; i < 7; i++) {
+    for (let j = 0; j < 53; j++) {
+      let level = array[i][j]
+      if (level > -1) {
+        tag += `<use href="#r" x="${j * 14}" y="${i * 14}" class="c`
+        if (level === 0) {
+          tag += `"/>\n`
+        } else {
+          tag += ` c${i}-${j}"/>\n`
+        }
+      }
+    }
+  }
+  return tag
+}
+
+/**
+ * 获取首位空白个数
+ */
+function getBlankCount(array) {
+  let count = []
+  for (let i = 0; i < 7; i++) {
+    let level = array[i][0]
+    if (level > -1) {
+      count[0] = i
+      break
+    }
+  }
+  count[1] = 0
+  for (let i = 0; i < 7; i++) {
+    let level = array[i][52]
+    if (level === -1) {
+      count[1] = 7 - i
+      break
+    }
+  }
+  return count
 }
 
 /**
  * 获取路径
  * @return [][] x,y,贡献级别
  */
-function getPath(array) {
+function getPath(array, startBlankCount, endBlankCount) {
+  let arrayCopy = []
+  for (let a of array) {
+    arrayCopy.push([...a])
+  }
   let path = []
   let x
   let y
   let direction
   // 起始点
   y = 0
-  for (let i = 0; i < 7; i++) {
-    let level = array[i][0]
-    if (level > -1) {
-      x = i
-      direction = 'down'
-      path.push([x, y, level])
-      if (level > 0) {
-        array[x][0] = -2
-      }
-      break
-    }
+  x = startBlankCount
+  direction = 'down'
+  let level = arrayCopy[x][0]
+  path.push([x, y, level])
+  if (level > 0) {
+    arrayCopy[x][0] = -2
   }
-  // 剩余点
+  // 中间点
   while (true) {
     let pathLength = path.length
     if (pathLength > 1) {
@@ -70,7 +168,7 @@ function getPath(array) {
       let y2 = path[pathLength - 1][1]
       direction = getDirection(x1, y1, x2, y2)
     }
-    let nextPoint = getNextPoint(array, x, y, 1, direction)
+    let nextPoint = getNextPoint(arrayCopy, x, y, 1, direction)
     x = nextPoint[0]
     if (x === -1) {
       break
@@ -84,100 +182,17 @@ function getPath(array) {
     }
   }
   // 结束点
-  x = 6
   y = 52
-  for (let i = 0; i < 7; i++) {
-    let level = array[i][52]
-    if (level === -1) {
-      x = i - 1
-      break
-    }
-  }
+  x = 6 - endBlankCount
   let pathLength = path.length
   let x1 = path[pathLength - 1][0]
   let y1 = path[pathLength - 1][1]
-  path.push(...getIntermediatePath(x1, y1, x, y, direction))
-  if (x1 !== 6 && y1 !== 52) {
+  if (!(x === x1 && y === y1)) {
+    path.push(...getIntermediatePath(x1, y1, x, y, direction))
     path.push([x, y, 0])
   }
   return path
 }
-
-// let d = 'down'
-// console.log('1', getIntermediatePath(0, 0, 4, 0, d))
-// console.log('2', getIntermediatePath(0, 0, 3, -1, d))
-// console.log('3', getIntermediatePath(0, 0, 3, 1, d))
-// console.log('4', getIntermediatePath(0, 0, 2, -2, d))
-// console.log('5', getIntermediatePath(0, 0, 2, 2, d))
-// console.log('6', getIntermediatePath(0, 0, 1, -3, d))
-// console.log('7', getIntermediatePath(0, 0, 1, 3, d))
-// console.log('8', getIntermediatePath(0, 0, 0, -4, d))
-// console.log('9', getIntermediatePath(0, 0, 0, 4, d))
-// console.log('A', getIntermediatePath(0, 0, -1, -3, d))
-// console.log('B', getIntermediatePath(0, 0, -1, 3, d))
-// console.log('C', getIntermediatePath(0, 0, -2, -2, d))
-// console.log('D', getIntermediatePath(0, 0, -2, 2, d))
-// console.log('E', getIntermediatePath(0, 0, -3, -1, d))
-// console.log('F', getIntermediatePath(0, 0, -3, 1, d))
-// console.log('G', getIntermediatePath(0, 0, -2, 0, d))
-// console.log('+', getIntermediatePath(0, 1, -2, 1, d))
-
-// let d = 'up'
-// console.log('1', getIntermediatePath(0, 0, -4, 0, d))
-// console.log('2', getIntermediatePath(0, 0, -3, 1, d))
-// console.log('3', getIntermediatePath(0, 0, -3, -1, d))
-// console.log('4', getIntermediatePath(0, 0, -2, 2, d))
-// console.log('5', getIntermediatePath(0, 0, -2, -2, d))
-// console.log('6', getIntermediatePath(0, 0, -1, 3, d))
-// console.log('7', getIntermediatePath(0, 0, -1, -3, d))
-// console.log('8', getIntermediatePath(0, 0, 0, 4, d))
-// console.log('9', getIntermediatePath(0, 0, 0, -4, d))
-// console.log('A', getIntermediatePath(0, 0, 1, 3, d))
-// console.log('B', getIntermediatePath(0, 0, 1, -3, d))
-// console.log('C', getIntermediatePath(0, 0, 2, 2, d))
-// console.log('D', getIntermediatePath(0, 0, 2, -2, d))
-// console.log('E', getIntermediatePath(0, 0, 3, 1, d))
-// console.log('F', getIntermediatePath(0, 0, 3, -1, d))
-// console.log('G', getIntermediatePath(0, 52, 2, 52, d))
-// console.log('+', getIntermediatePath(0, 51, 2, 51, d))
-
-// let d = 'right'
-// console.log('1', getIntermediatePath(0, 0, 0, 4, d))
-// console.log('2', getIntermediatePath(0, 0, 1, 3, d))
-// console.log('3', getIntermediatePath(0, 0, -1, 3, d))
-// console.log('4', getIntermediatePath(0, 0, 2, 2, d))
-// console.log('5', getIntermediatePath(0, 0, -2, 2, d))
-// console.log('6', getIntermediatePath(0, 0, 3, 1, d))
-// console.log('7', getIntermediatePath(0, 0, -3, 1, d))
-// console.log('8', getIntermediatePath(0, 0, 4, 0, d))
-// console.log('9', getIntermediatePath(0, 0, -4, 0, d))
-// console.log('A', getIntermediatePath(0, 0, 3, -1, d))
-// console.log('B', getIntermediatePath(0, 0, -3, -1, d))
-// console.log('C', getIntermediatePath(0, 0, 2, -2, d))
-// console.log('D', getIntermediatePath(0, 0, -2, -2, d))
-// console.log('E', getIntermediatePath(0, 0, 1, -3, d))
-// console.log('F', getIntermediatePath(0, 0, -1, -3, d))
-// console.log('G', getIntermediatePath(6, 0, 6, -2, d))
-// console.log('+', getIntermediatePath(5, 0, 5, -2, d))
-
-let d = 'left'
-// console.log('1', getIntermediatePath(0, 0, 0, -4, d))
-// console.log('2', getIntermediatePath(0, 0, 1, -3, d))
-// console.log('3', getIntermediatePath(0, 0, -1, -3, d))
-// console.log('4', getIntermediatePath(0, 0, 2, -2, d))
-// console.log('5', getIntermediatePath(0, 0, -2, -2, d))
-// console.log('6', getIntermediatePath(0, 0, 3, -1, d))
-// console.log('7', getIntermediatePath(0, 0, -3, -1, d))
-// console.log('8', getIntermediatePath(0, 0, 4, 0, d))
-// console.log('9', getIntermediatePath(0, 0, -4, 0, d))
-// console.log('A', getIntermediatePath(0, 0, -3, 1, d))
-// console.log('B', getIntermediatePath(0, 0, 3, 1, d))
-// console.log('C', getIntermediatePath(0, 0, -2, 2, d))
-// console.log('D', getIntermediatePath(0, 0, 2, 2, d))
-// console.log('E', getIntermediatePath(0, 0, -1, 3, d))
-// console.log('F', getIntermediatePath(0, 0, 1, 3, d))
-// console.log('G', getIntermediatePath(0, 0, 0, 2, d))
-// console.log('+', getIntermediatePath(1, 0, 1, 2, d))
 
 /**
  * 获取中间路径(不包含起始点和结束点)
@@ -188,10 +203,8 @@ function getIntermediatePath(x1, y1, x2, y2, direction) {
   let y = y2 - y1
   // 正后方
   let b = true
-  // 左右侧和前左右侧
-  let fb = true
-  // 后左右侧
-  let bb = true
+  // 左右侧、前左右侧、后左右侧
+  let lr = true
   if (x === 0 && y === 0) {
     return path
   }
@@ -207,8 +220,7 @@ function getIntermediatePath(x1, y1, x2, y2, direction) {
       if (y1 === 52) {
         b = false
       }
-      fb = false
-      bb = false
+      lr = false
       break
     }
     case 'right': {
@@ -227,8 +239,7 @@ function getIntermediatePath(x1, y1, x2, y2, direction) {
       if (x1 === 0) {
         b = false
       }
-      fb = false
-      bb = false
+      lr = false
       break
     }
   }
@@ -267,7 +278,7 @@ function getIntermediatePath(x1, y1, x2, y2, direction) {
   }
   // 左右侧
   else if (x === 0) {
-    if (!fb) {
+    if (!lr) {
       y = -y
     }
     // 左侧 9(0,4)
@@ -291,7 +302,7 @@ function getIntermediatePath(x1, y1, x2, y2, direction) {
     for (let i = 1; i < x + 1; i++) {
       path.push([i, 0, 0])
     }
-    if (!fb) {
+    if (!lr) {
       y = -y
     }
     // 前左侧
@@ -311,7 +322,7 @@ function getIntermediatePath(x1, y1, x2, y2, direction) {
   }
   // 后左右侧 B(-1,3) A(-1,-3) / D(-2,2) C(-2,-2) / F(-3,1) E(-3,-1)
   else {
-    if (!bb) {
+    if (!lr) {
       y = -y
     }
     // 后左侧
@@ -598,88 +609,6 @@ function getPoint(x, y, distance, direction) {
 }
 
 /**
- * 样式
- */
-function styles(array, light) {
-  let style = `<style>\n`
-  style += styleRoot(light)
-  style += `.c{
-shape-rendering:geometricPrecision;
-fill:var(--c0);
-stroke-width:1px;
-stroke:rgba(27,31,35,0.06);
-}
-`
-  for (let i = 0; i < 7; i++) {
-    for (let j = 0; j < 53; j++) {
-      let level = array[i][j]
-      if (level > 0) {
-        style += `.c${i}-${j}{
-fill:var(--c${level});
-}
-`
-      }
-    }
-  }
-  style += `</style>\n`
-  return style
-}
-
-/**
- * 引用
- */
-function uses(array) {
-  let use = ""
-  for (let i = 0; i < 7; i++) {
-    for (let j = 0; j < 53; j++) {
-      let level = array[i][j]
-      if (level > -1) {
-        use += `<use href="#r" x="${j * 14}" y="${i * 14}" class="c`
-        if (level === 0) {
-          use += `"/>\n`
-        } else {
-          use += ` c${i}-${j}"/>\n`
-        }
-      }
-    }
-  }
-  return use
-}
-
-const styleRootLight = `:root{
---c0:#ebedf0;
---c1:#9be9a8;
---c2:#40c463;
---c3:#30a14e;
---c4:#216e39;
-}
-`
-
-const styleRootDark = `:root{
---c0:#161b22;
---c1:#0e4429;
---c2:#006d32;
---c3:#26a641;
---c4:#39d353;
-}
-`
-
-const styleRootAll = styleRootLight + `@media(prefers-color-scheme:dark){\n` + styleRootDark + `}\n`
-
-/**
- * 样式root
- */
-function styleRoot(light) {
-  if (typeof light === "undefined") {
-    return styleRootAll
-  } else if (light) {
-    return styleRootLight
-  } else {
-    return styleRootDark
-  }
-}
-
-/**
  * 获取GitHub用户贡献级别
  * @param userName 用户名
  * @param year 年
@@ -691,7 +620,7 @@ async function getGitHubContribution(userName, year) {
     url += `?year=${year}`
   }
   // let res = await (await fetch(url)).text()
-  let res = fs.readFileSync('../reference/contribution.json').toString()
+  let res = fs.readFileSync('./reference/contribution.json').toString()
   // 解析
   let array = []
   let data = JSON.parse(res)[1]
