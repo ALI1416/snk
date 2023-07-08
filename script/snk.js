@@ -1,6 +1,6 @@
 const fs = require('fs')
 
-// generateAnimation()
+generateAnimation()
 
 /**
  * 生成动画
@@ -47,11 +47,11 @@ function getPath(array) {
   let y
   let direction
   // 起始点
+  y = 0
   for (let i = 0; i < 7; i++) {
     let level = array[i][0]
     if (level > -1) {
       x = i
-      y = 0
       direction = 'down'
       path.push([x, y, level])
       if (level > 0) {
@@ -73,7 +73,7 @@ function getPath(array) {
     let nextPoint = getNextPoint(array, x, y, 1, direction)
     x = nextPoint[0]
     if (x === -1) {
-      return path
+      break
     } else {
       y = nextPoint[1]
       let pathLength = path.length
@@ -84,9 +84,100 @@ function getPath(array) {
     }
   }
   // 结束点
+  x = 6
+  y = 52
+  for (let i = 0; i < 7; i++) {
+    let level = array[i][52]
+    if (level === -1) {
+      x = i - 1
+      break
+    }
+  }
+  let pathLength = path.length
+  let x1 = path[pathLength - 1][0]
+  let y1 = path[pathLength - 1][1]
+  path.push(...getIntermediatePath(x1, y1, x, y, direction))
+  if (x1 !== 6 && y1 !== 52) {
+    path.push([x, y, 0])
+  }
+  return path
 }
 
-console.log(getIntermediatePath(0, 9, 1, 8, 'down'))
+// let d = 'down'
+// console.log('1', getIntermediatePath(0, 0, 4, 0, d))
+// console.log('2', getIntermediatePath(0, 0, 3, -1, d))
+// console.log('3', getIntermediatePath(0, 0, 3, 1, d))
+// console.log('4', getIntermediatePath(0, 0, 2, -2, d))
+// console.log('5', getIntermediatePath(0, 0, 2, 2, d))
+// console.log('6', getIntermediatePath(0, 0, 1, -3, d))
+// console.log('7', getIntermediatePath(0, 0, 1, 3, d))
+// console.log('8', getIntermediatePath(0, 0, 0, -4, d))
+// console.log('9', getIntermediatePath(0, 0, 0, 4, d))
+// console.log('A', getIntermediatePath(0, 0, -1, -3, d))
+// console.log('B', getIntermediatePath(0, 0, -1, 3, d))
+// console.log('C', getIntermediatePath(0, 0, -2, -2, d))
+// console.log('D', getIntermediatePath(0, 0, -2, 2, d))
+// console.log('E', getIntermediatePath(0, 0, -3, -1, d))
+// console.log('F', getIntermediatePath(0, 0, -3, 1, d))
+// console.log('G', getIntermediatePath(0, 0, -2, 0, d))
+// console.log('+', getIntermediatePath(0, 1, -2, 1, d))
+
+// let d = 'up'
+// console.log('1', getIntermediatePath(0, 0, -4, 0, d))
+// console.log('2', getIntermediatePath(0, 0, -3, 1, d))
+// console.log('3', getIntermediatePath(0, 0, -3, -1, d))
+// console.log('4', getIntermediatePath(0, 0, -2, 2, d))
+// console.log('5', getIntermediatePath(0, 0, -2, -2, d))
+// console.log('6', getIntermediatePath(0, 0, -1, 3, d))
+// console.log('7', getIntermediatePath(0, 0, -1, -3, d))
+// console.log('8', getIntermediatePath(0, 0, 0, 4, d))
+// console.log('9', getIntermediatePath(0, 0, 0, -4, d))
+// console.log('A', getIntermediatePath(0, 0, 1, 3, d))
+// console.log('B', getIntermediatePath(0, 0, 1, -3, d))
+// console.log('C', getIntermediatePath(0, 0, 2, 2, d))
+// console.log('D', getIntermediatePath(0, 0, 2, -2, d))
+// console.log('E', getIntermediatePath(0, 0, 3, 1, d))
+// console.log('F', getIntermediatePath(0, 0, 3, -1, d))
+// console.log('G', getIntermediatePath(0, 52, 2, 52, d))
+// console.log('+', getIntermediatePath(0, 51, 2, 51, d))
+
+// let d = 'right'
+// console.log('1', getIntermediatePath(0, 0, 0, 4, d))
+// console.log('2', getIntermediatePath(0, 0, 1, 3, d))
+// console.log('3', getIntermediatePath(0, 0, -1, 3, d))
+// console.log('4', getIntermediatePath(0, 0, 2, 2, d))
+// console.log('5', getIntermediatePath(0, 0, -2, 2, d))
+// console.log('6', getIntermediatePath(0, 0, 3, 1, d))
+// console.log('7', getIntermediatePath(0, 0, -3, 1, d))
+// console.log('8', getIntermediatePath(0, 0, 4, 0, d))
+// console.log('9', getIntermediatePath(0, 0, -4, 0, d))
+// console.log('A', getIntermediatePath(0, 0, 3, -1, d))
+// console.log('B', getIntermediatePath(0, 0, -3, -1, d))
+// console.log('C', getIntermediatePath(0, 0, 2, -2, d))
+// console.log('D', getIntermediatePath(0, 0, -2, -2, d))
+// console.log('E', getIntermediatePath(0, 0, 1, -3, d))
+// console.log('F', getIntermediatePath(0, 0, -1, -3, d))
+// console.log('G', getIntermediatePath(6, 0, 6, -2, d))
+// console.log('+', getIntermediatePath(5, 0, 5, -2, d))
+
+let d = 'left'
+// console.log('1', getIntermediatePath(0, 0, 0, -4, d))
+// console.log('2', getIntermediatePath(0, 0, 1, -3, d))
+// console.log('3', getIntermediatePath(0, 0, -1, -3, d))
+// console.log('4', getIntermediatePath(0, 0, 2, -2, d))
+// console.log('5', getIntermediatePath(0, 0, -2, -2, d))
+// console.log('6', getIntermediatePath(0, 0, 3, -1, d))
+// console.log('7', getIntermediatePath(0, 0, -3, -1, d))
+// console.log('8', getIntermediatePath(0, 0, 4, 0, d))
+// console.log('9', getIntermediatePath(0, 0, -4, 0, d))
+// console.log('A', getIntermediatePath(0, 0, -3, 1, d))
+// console.log('B', getIntermediatePath(0, 0, 3, 1, d))
+// console.log('C', getIntermediatePath(0, 0, -2, 2, d))
+// console.log('D', getIntermediatePath(0, 0, 2, 2, d))
+// console.log('E', getIntermediatePath(0, 0, -1, 3, d))
+// console.log('F', getIntermediatePath(0, 0, 1, 3, d))
+// console.log('G', getIntermediatePath(0, 0, 0, 2, d))
+// console.log('+', getIntermediatePath(1, 0, 1, 2, d))
 
 /**
  * 获取中间路径(不包含起始点和结束点)
@@ -95,25 +186,49 @@ function getIntermediatePath(x1, y1, x2, y2, direction) {
   let path = []
   let x = x2 - x1
   let y = y2 - y1
+  // 正后方
+  let b = true
+  // 左右侧和前左右侧
+  let fb = true
+  // 后左右侧
+  let bb = true
   if (x === 0 && y === 0) {
-    return path;
+    return path
   }
-  // 修正xy
   switch (direction) {
+    case 'down': {
+      if (y1 === 0) {
+        b = false
+      }
+      break
+    }
     case 'up': {
       x = -x
+      if (y1 === 52) {
+        b = false
+      }
+      fb = false
+      bb = false
       break
     }
     case 'right': {
       let temp = x
       x = y
-      y = temp
+      y = -temp
+      if (x1 === 6) {
+        b = false
+      }
       break
     }
     case 'left': {
       let temp = x
       x = -y
-      y = temp
+      y = -temp
+      if (x1 === 0) {
+        b = false
+      }
+      fb = false
+      bb = false
       break
     }
   }
@@ -138,16 +253,23 @@ function getIntermediatePath(x1, y1, x2, y2, direction) {
     }
     // 正后方 G(-2,0)
     else {
+      let one = -1
+      if (!b) {
+        one = 1
+      }
       // 右转 (0,-1)
-      path.push([0, -1, 0])
+      path.push([0, one, 0])
       // 倒退 (-1,-1) (-2,-1)
       for (let i = 1; i < -x + 1; i++) {
-        path.push([-i, -1, 0])
+        path.push([-i, one, 0])
       }
     }
   }
   // 左右侧
   else if (x === 0) {
+    if (!fb) {
+      y = -y
+    }
     // 左侧 9(0,4)
     if (y > 0) {
       // 左转并前进 (0,1) (0,2) (0,3)
@@ -169,6 +291,9 @@ function getIntermediatePath(x1, y1, x2, y2, direction) {
     for (let i = 1; i < x + 1; i++) {
       path.push([i, 0, 0])
     }
+    if (!fb) {
+      y = -y
+    }
     // 前左侧
     if (y > 0) {
       // 左转并前进 3null / 5(2,1) / 7(1,1) (1,2)
@@ -186,6 +311,9 @@ function getIntermediatePath(x1, y1, x2, y2, direction) {
   }
   // 后左右侧 B(-1,3) A(-1,-3) / D(-2,2) C(-2,-2) / F(-3,1) E(-3,-1)
   else {
+    if (!bb) {
+      y = -y
+    }
     // 后左侧
     if (y > 0) {
       // 左转并前进 B(0,1) (0,2) (0,3) / D(0,1) (0,2) / F(0,1)
@@ -563,7 +691,7 @@ async function getGitHubContribution(userName, year) {
     url += `?year=${year}`
   }
   // let res = await (await fetch(url)).text()
-  let res = fs.readFileSync('./reference/contribution.json').toString()
+  let res = fs.readFileSync('../reference/contribution.json').toString()
   // 解析
   let array = []
   let data = JSON.parse(res)[1]
