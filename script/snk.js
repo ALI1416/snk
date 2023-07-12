@@ -11,25 +11,42 @@ async function generateAnimation() {
   const array = await getGitHubContribution(userName, year)
   const [startBlankCount, endBlankCount] = getBlankCount(array)
   const path = getPath(array, startBlankCount, endBlankCount)
-  let svg = `${svgHeader}
+  const frame = getFrame(path, startBlankCount, endBlankCount)
+  const snkPath = getSnkPath(path)
+  const progressPath = getProgressPath(path)
+  const rectStyle = getRectStyle(path, frame, startBlankCount)
+  const snkStyle = getSnkStyle(snkPath, frame)
+  const progressStyle = getProgressStyle(progressPath, frame, path.length, startBlankCount)
+  const rectTag = getRectTag(array)
+  const progressTag = getProgressTag(progressPath, path.length)
+  const svg = `${svgHeader}
 <style>
-${getStyleRoot()}
-${getRectStyle(path, startBlankCount, endBlankCount)}
-</style>
-${getRectTag(array)}
-${svgFooter}
-`
+${styleRoot}
+${rectStyle}${snkStyle}${progressStyle}</style>
+${rectTag}${progressTag}${svgFooter}`
+  const svgLight = `${svgHeader}
+<style>
+${styleRootLight}
+${rectStyle}${snkStyle}${progressStyle}</style>
+${rectTag}${progressTag}${svgFooter}`
+  const svgDark = `${svgHeader}
+<style>
+${styleRootDark}
+${rectStyle}${snkStyle}${progressStyle}</style>
+${rectTag}${progressTag}${svgFooter}`
   fs.mkdirSync('./dist/images/', {recursive: true})
   fs.writeFileSync('./dist/images/snk.svg', svg)
+  fs.writeFileSync('./dist/images/snk.light.svg', svgLight)
+  fs.writeFileSync('./dist/images/snk.dark.svg', svgDark)
 }
 
 /**
  * SVG头部
  */
-const svgHeader = `<svg width="880" height="192" viewBox="0 0 880 192" xmlns="http://www.w3.org/2000/svg">
+const svgHeader = `<svg width="758" height="130" viewBox="-10 -10 758 130" xmlns="http://www.w3.org/2000/svg">
 <defs>
 <clipPath id="cp">
-<rect x="-2" y="-2" width="98" height="98"/>
+<rect x="-2" y="-2" width="742" height="98"/>
 </clipPath>
 <rect id="r" width="10" height="10" rx="2" ry="2"/>
 </defs>`
@@ -53,31 +70,131 @@ const styleRootLight = `:root{--c0:#ebedf0;--c1:#9be9a8;--c2:#40c463;--c3:#30a14
  */
 const styleRootDark = `:root{--c0:#161b22;--c1:#0e4429;--c2:#006d32;--c3:#26a641;--c4:#39d353}`
 /**
- * 根样式-亮黑
+ * 根样式
  */
-const styleRootAll = `${styleRootLight}@media(prefers-color-scheme:dark){${styleRootDark}}`
+const styleRoot = `${styleRootLight}@media(prefers-color-scheme:dark){${styleRootDark}}`
 
 /**
- * 获取根样式
+ * 获取进度条标签
  */
-function getStyleRoot(light) {
-  if (typeof light === "undefined") {
-    return styleRootAll
-  } else if (light) {
-    return styleRootLight
-  } else {
-    return styleRootDark
+function getProgressTag(progressPath, pathLength) {
+  let tag = ''
+  let progressPathLength = progressPath.length
+  for (let i = 0; i < progressPathLength; i++) {
+    tag += `<rect class="p p${i}" y="100" height="10" x="${(738 * progressPath[i][1] / pathLength).toFixed(2)}" width="${(738 * progressPath[i][2] / pathLength).toFixed(2)}"/>\n`
   }
+  return tag
+}
+
+/**
+ * 获取进度条样式
+ */
+function getProgressStyle(progressPath, frame, pathLength, startBlankCount) {
+  let style = `.p{animation: none linear ${frame}00ms infinite}\n`
+  let progressPathLength = progressPath.length
+  for (let i = 0; i < progressPathLength; i++) {
+    style += `@keyframes p${i}{0%,${(100 * (5 + startBlankCount + progressPath[i][1]) / frame).toFixed(2)}%{transform:scale(0,1)}${(100 * (5 + startBlankCount + progressPath[i][1] + progressPath[i][2]) / frame).toFixed(2)}%,100%{transform:scale(1,1)}}.p${i}{fill:var(--c${progressPath[i][0]});animation-name:p${i};transform-origin: ${(738 * progressPath[i][1] / pathLength).toFixed(2)}px 0}\n`
+  }
+  return style
+}
+
+/**
+ * 获取进度条路径
+ * @return [][] 贡献级别,起始帧,帧数
+ */
+function getProgressPath(path) {
+  let pathLength = path.length
+  let progressPath = []
+  // 0级
+  progressPath.push([0, 0, pathLength])
+  let level = path[0][2]
+  if (level > 0) {
+    progressPath.push([level, 0, 1])
+  }
+  for (let i = 1; i < pathLength; i++) {
+    level = path[i][2]
+    if (level > 0) {
+      if (path[i - 1][2] === level) {
+        progressPath[progressPath.length - 1][2] += 1
+      } else {
+        progressPath.push([level, i, 1])
+      }
+    }
+  }
+  return progressPath
+}
+
+/**
+ * 获取蛇样式
+ */
+function getSnkStyle(snkPath, frame) {
+  let style = `.s{shape-rendering:geometricPrecision;fill:#800080;animation:none linear ${frame}00ms infinite}\n`
+  let snkPathLength = snkPath.length
+  for (let j = 0; j < 4; j++) {
+    let countFrame = j
+    style += `@keyframes s${j}{\n0%,`
+    for (let i = 0; i < snkPathLength - 1; i++) {
+      countFrame += snkPath[i][2]
+      style += `${((100 * countFrame / frame).toFixed(2))}%{transform:translate(${snkPath[i][1] * 14}px,${snkPath[i][0] * 14}px)}\n`
+    }
+    countFrame += snkPath[snkPathLength - 1][2]
+    style += `${((100 * countFrame / frame).toFixed(2))}%,100%{transform:translate(${snkPath[snkPathLength - 1][1] * 14}px,${snkPath[snkPathLength - 1][0] * 14}px)}\n`
+    style += `}\n.s${j}{animation-name:s${j}}\n`
+  }
+  return style
+}
+
+/**
+ * 获取蛇路径
+ * @return [][] x,y,帧数
+ */
+function getSnkPath(path) {
+  let pathLength = path.length
+  let snkPath = []
+  // 开始前暂停5帧
+  snkPath.push([-1, 0, 5])
+  // 1垂直方向 0水平方向
+  let vertical = 1
+  // 坐标(垂直方向y 水平方向x)
+  let coordinateA = 0
+  for (let i = 0; i < pathLength; i++) {
+    let currentCoordinateA = path[i][vertical]
+    if (currentCoordinateA !== coordinateA) {
+      let previousCoordinate = path[i - 1]
+      if (vertical === 1) {
+        let coordinateB = snkPath[snkPath.length - 1][0]
+        snkPath.push([previousCoordinate[0], previousCoordinate[1], Math.abs(previousCoordinate[0] - coordinateB)])
+        vertical = 0
+        coordinateA = previousCoordinate[0]
+      } else {
+        let coordinateB = snkPath[snkPath.length - 1][1]
+        snkPath.push([previousCoordinate[0], previousCoordinate[1], Math.abs(previousCoordinate[1] - coordinateB)])
+        vertical = 1
+        coordinateA = previousCoordinate[1]
+      }
+    }
+  }
+  // 结束点
+  let endPath = path[pathLength - 1]
+  let endSnkPath = snkPath[snkPath.length - 1]
+  if (!((endPath[0] === endSnkPath[0]) && (endPath[1] === endSnkPath[1]))) {
+    let distance = endSnkPath[0] - endPath[0]
+    if (distance === 0) {
+      distance = endSnkPath[1] - endPath[1]
+    }
+    snkPath.push([endPath[0], endPath[1], Math.abs(distance)])
+  }
+  // 出场
+  snkPath.push([7, 52, 7 - endPath[0]])
+  return snkPath
 }
 
 /**
  * 获取方块样式
  */
-function getRectStyle(path, startBlankCount, endBlankCount) {
-  let pathLength = path.length
-  // 开始前暂停5帧+蛇头从左上角到起始点帧数+方块内运动帧数+蛇尾从结束点到右下角帧数+蛇长4帧+结束后暂停5帧
-  const frame = 14 + startBlankCount + endBlankCount + pathLength
+function getRectStyle(path, frame, startBlankCount) {
   let style = `.c{shape-rendering:geometricPrecision;fill:var(--c0);stroke-width:1px;stroke:rgba(27,31,35,0.06);animation:none linear ${frame}00ms infinite}\n`
+  let pathLength = path.length
   for (let i = 0; i < pathLength; i++) {
     let x = path[i][0]
     let y = path[i][1]
@@ -96,7 +213,7 @@ function getRectStyle(path, startBlankCount, endBlankCount) {
  * 获取方块标签
  */
 function getRectTag(array) {
-  let tag = ""
+  let tag = ''
   for (let i = 0; i < 7; i++) {
     for (let j = 0; j < 53; j++) {
       let level = array[i][j]
@@ -134,6 +251,15 @@ function getBlankCount(array) {
     }
   }
   return count
+}
+
+/**
+ * 获取总帧数
+ */
+function getFrame(path, startBlankCount, endBlankCount) {
+  let pathLength = path.length
+  // 开始前暂停5帧+蛇头从左上角到起始点帧数+方块内运动帧数+蛇尾从结束点到右下角帧数+蛇长4帧+结束后暂停5帧
+  return 14 + startBlankCount + endBlankCount + pathLength
 }
 
 /**
@@ -616,11 +742,11 @@ function getPoint(x, y, distance, direction) {
  */
 async function getGitHubContribution(userName, year) {
   let url = `https://api.404z.cn/api/github/contribution/${userName}`
-  if (typeof year !== "undefined") {
+  if (typeof year !== 'undefined') {
     url += `?year=${year}`
   }
-  // let res = await (await fetch(url)).text()
-  let res = fs.readFileSync('./reference/contribution.json').toString()
+  let res = await (await fetch(url)).text()
+  // let res = fs.readFileSync('./reference/contribution.json').toString()
   // 解析
   let array = []
   let data = JSON.parse(res)[1]
