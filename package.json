@@ -1,8 +1,47 @@
 {
-  "name": "snk",
-  "version": "0.0.0",
+  "name": "@ali1416/snk",
+  "version": "1.0.0",
+  "description": "GitHub贡献图动画",
   "scripts": {
-    "snk": "node script/snk.js ali1416",
-    "build": "npm run snk"
+    "tsc": "npx tsc",
+    "rollup": "npx rollup -c --bundleConfigAsCjs",
+    "build": "npm run tsc && npm run rollup"
+  },
+  "main": "./dist/snk.node.js",
+  "module": "./lib/main.js",
+  "types": "./types/main.d.ts",
+  "author": {
+    "name": "ali",
+    "email": "ali-k@foxmail.com"
+  },
+  "files": [
+    "dist",
+    "lib",
+    "types",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "GitHub",
+    "SVG"
+  ],
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/ALI1416/snk",
+  "bugs": "https://github.com/ALI1416/snk/issues/new",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ALI1416/snk.git"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.22.1",
+    "@rollup/plugin-babel": "^6.0.3",
+    "@rollup/plugin-terser": "^0.4.3"
   }
 }

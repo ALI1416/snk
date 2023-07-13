@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title</title>
+    <script src="../dist/snk.min.js"></script>
+</head>
+
+<body>
+<label for="userName">用户名：</label><input type="text" id="userName" value="ali1416"><br>
+<label for="year">年：</label><input type="number" id="year"><br>
+<button id="generate">生成动画</button>
+<p id="tip"></p>
+<hr>
+<div id="svgMix"></div>
+<script>
+  const userName = document.getElementById('userName');
+  const year = document.getElementById('year');
+  const tip = document.getElementById('tip');
+  const generate = document.getElementById('generate');
+  const svgMix = document.getElementById('svgMix');
+  let svg
+  generate.addEventListener('click', async function () {
+    try {
+      svg = await snk(userName.value, year.value)
+      svgMix.innerHTML = svg[0]
+    } catch (e) {
+      console.error(e);
+      tip.innerText += '\n' + e;
+    }
+  })
+  generate.click();
+</script>
+</body>
+
+</html>
