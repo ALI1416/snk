@@ -10,7 +10,6 @@ async function getGitHubContribution(userName: string, year?: number): Promise<n
     url += `?year=${year}`
   }
   let res = await (await fetch(url)).text()
-  // let res = fs.readFileSync('../reference/contribution.json').toString()
   // 解析
   let array = []
   let data = JSON.parse(res)[1]

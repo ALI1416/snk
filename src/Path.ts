@@ -1,22 +1,18 @@
 /**
  * 获取路径
  * @param array 用户贡献级别数组
- * @param startBlankCount 头部空白个数
- * @param endBlankCount 尾部空白个数
  * @return number[][] x,y,贡献级别
  */
-function getPath(array: number[][], startBlankCount: number, endBlankCount: number): number[][] {
+function getPath(array: number[][]): number[][] {
   let arrayCopy: number[][] = []
   for (let a of array) {
     arrayCopy.push([...a])
   }
   let path: number[][] = []
-  let x: number
-  let y: number
-  let direction: Direction
+  let x: number, y: number, direction: Direction
   // 起始点
+  x = 0
   y = 0
-  x = startBlankCount
   direction = 'down'
   let level = arrayCopy[x][0]
   path.push([x, y, level])
@@ -47,8 +43,8 @@ function getPath(array: number[][], startBlankCount: number, endBlankCount: numb
     }
   }
   // 结束点
+  x = 6
   y = 52
-  x = 6 - endBlankCount
   let pathLength = path.length
   let x1 = path[pathLength - 1][0]
   let y1 = path[pathLength - 1][1]
@@ -497,4 +493,14 @@ function getPoint(x: number, y: number, distance: number, direction: Direction):
   return array
 }
 
-export {getPath, Direction}
+/**
+ * 获取总帧数
+ * @param path 路径
+ * @return number 总帧数
+ */
+function getFrame(path: number[][]): number {
+  // 开始前暂停5帧+方块内运动帧数+蛇长4帧+结束后暂停5帧
+  return 14 + path.length
+}
+
+export {getPath, getFrame, Direction}

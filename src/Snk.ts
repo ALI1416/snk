@@ -1,6 +1,5 @@
 import {getGitHubContribution} from './Contribution'
-import {getBlankCount, getFrame} from './Utils'
-import {getPath} from './Path'
+import {getFrame, getPath} from './Path'
 import {getSnkPath, getSnkStyle} from './Snake'
 import {getProgressPath, getProgressStyle, getProgressTag} from './Progress'
 import {getRectStyle, getRectTag} from './Rect'
@@ -14,14 +13,13 @@ import {styleRoot, styleRootDark, styleRootLight, svgFooter, svgHeader} from './
  */
 async function snk(userName: string, year?: number): Promise<string[]> {
   const array = await getGitHubContribution(userName, year)
-  const [startBlankCount, endBlankCount] = getBlankCount(array)
-  const path = getPath(array, startBlankCount, endBlankCount)
-  const frame = getFrame(path, startBlankCount, endBlankCount)
+  const path = getPath(array)
+  const frame = getFrame(path)
   const snkPath = getSnkPath(path)
   const progressPath = getProgressPath(path)
-  const rectStyle = getRectStyle(path, frame, startBlankCount)
+  const rectStyle = getRectStyle(path, frame)
   const snkStyle = getSnkStyle(snkPath, frame)
-  const progressStyle = getProgressStyle(progressPath, frame, path.length, startBlankCount)
+  const progressStyle = getProgressStyle(progressPath, frame, path.length)
   const rectTag = getRectTag(array)
   const progressTag = getProgressTag(progressPath, path.length)
   const svgMix = `${svgHeader}

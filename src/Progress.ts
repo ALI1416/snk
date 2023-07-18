@@ -45,14 +45,13 @@ function getProgressTag(progressPath, pathLength): string {
  * @param progressPath 进度条路径
  * @param frame 帧数
  * @param pathLength 路径长度
- * @param startBlankCount 头部空白个数
  * @return string 样式
  */
-function getProgressStyle(progressPath, frame, pathLength, startBlankCount): string {
+function getProgressStyle(progressPath, frame, pathLength): string {
   let style: string = `.p{animation: none linear ${frame}00ms infinite}\n`
   let progressPathLength = progressPath.length
   for (let i = 0; i < progressPathLength; i++) {
-    style += `@keyframes p${i}{0%,${(100 * (5 + startBlankCount + progressPath[i][1]) / frame).toFixed(2)}%{transform:scale(0,1)}${(100 * (5 + startBlankCount + progressPath[i][1] + progressPath[i][2]) / frame).toFixed(2)}%,100%{transform:scale(1,1)}}.p${i}{fill:var(--c${progressPath[i][0]});animation-name:p${i};transform-origin: ${(738 * progressPath[i][1] / pathLength).toFixed(2)}px 0}\n`
+    style += `@keyframes p${i}{0%,${(100 * (5 + progressPath[i][1]) / frame).toFixed(2)}%{transform:scale(0,1)}${(100 * (5 + progressPath[i][1] + progressPath[i][2]) / frame).toFixed(2)}%,100%{transform:scale(1,1)}}.p${i}{fill:var(--c${progressPath[i][0]});animation-name:p${i};transform-origin: ${(738 * progressPath[i][1] / pathLength).toFixed(2)}px 0}\n`
   }
   return style
 }

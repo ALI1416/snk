@@ -9,14 +9,13 @@ async function generateAnimation() {
   const userName = process.argv[2]
   const year = process.argv[3]
   const array = await getGitHubContribution(userName, year)
-  const [startBlankCount, endBlankCount] = getBlankCount(array)
-  const path = getPath(array, startBlankCount, endBlankCount)
-  const frame = getFrame(path, startBlankCount, endBlankCount)
+  const path = getPath(array)
+  const frame = getFrame(path)
   const snkPath = getSnkPath(path)
   const progressPath = getProgressPath(path)
-  const rectStyle = getRectStyle(path, frame, startBlankCount)
+  const rectStyle = getRectStyle(path, frame)
   const snkStyle = getSnkStyle(snkPath, frame)
-  const progressStyle = getProgressStyle(progressPath, frame, path.length, startBlankCount)
+  const progressStyle = getProgressStyle(progressPath, frame, path.length)
   const rectTag = getRectTag(array)
   const progressTag = getProgressTag(progressPath, path.length)
   const svg = `${svgHeader}
@@ -89,11 +88,11 @@ function getProgressTag(progressPath, pathLength) {
 /**
  * 获取进度条样式
  */
-function getProgressStyle(progressPath, frame, pathLength, startBlankCount) {
+function getProgressStyle(progressPath, frame, pathLength) {
   let style = `.p{animation: none linear ${frame}00ms infinite}\n`
   let progressPathLength = progressPath.length
   for (let i = 0; i < progressPathLength; i++) {
-    style += `@keyframes p${i}{0%,${(100 * (5 + startBlankCount + progressPath[i][1]) / frame).toFixed(2)}%{transform:scale(0,1)}${(100 * (5 + startBlankCount + progressPath[i][1] + progressPath[i][2]) / frame).toFixed(2)}%,100%{transform:scale(1,1)}}.p${i}{fill:var(--c${progressPath[i][0]});animation-name:p${i};transform-origin: ${(738 * progressPath[i][1] / pathLength).toFixed(2)}px 0}\n`
+    style += `@keyframes p${i}{0%,${(100 * (5 + progressPath[i][1]) / frame).toFixed(2)}%{transform:scale(0,1)}${(100 * (5 + progressPath[i][1] + progressPath[i][2]) / frame).toFixed(2)}%,100%{transform:scale(1,1)}}.p${i}{fill:var(--c${progressPath[i][0]});animation-name:p${i};transform-origin: ${(738 * progressPath[i][1] / pathLength).toFixed(2)}px 0}\n`
   }
   return style
 }
@@ -192,7 +191,7 @@ function getSnkPath(path) {
 /**
  * 获取方块样式
  */
-function getRectStyle(path, frame, startBlankCount) {
+function getRectStyle(path, frame) {
   let style = `.c{shape-rendering:geometricPrecision;fill:var(--c0);stroke-width:1px;stroke:rgba(27,31,35,0.06);animation:none linear ${frame}00ms infinite}\n`
   let pathLength = path.length
   for (let i = 0; i < pathLength; i++) {
@@ -201,8 +200,8 @@ function getRectStyle(path, frame, startBlankCount) {
     let level = path[i][2]
     if (level > 0) {
       let name = `c${x}-${y}`
-      // 开始前暂停5帧+蛇头从左上角到起始点帧数+1
-      let percent = (100 * (6 + startBlankCount + i) / frame).toFixed(2)
+      // 开始前暂停5帧+1
+      let percent = (100 * (6 + i) / frame).toFixed(2)
       style += `@keyframes ${name}{0%,${percent}%,100%{fill:var(--c${level})}${percent}1%,99.999%{fill:var(--c0)}}.${name}{animation-name:${name}}\n`
     }
   }
@@ -231,53 +230,27 @@ function getRectTag(array) {
 }
 
 /**
- * 获取首位空白个数
- */
-function getBlankCount(array) {
-  let count = []
-  for (let i = 0; i < 7; i++) {
-    let level = array[i][0]
-    if (level > -1) {
-      count[0] = i
-      break
-    }
-  }
-  count[1] = 0
-  for (let i = 0; i < 7; i++) {
-    let level = array[i][52]
-    if (level === -1) {
-      count[1] = 7 - i
-      break
-    }
-  }
-  return count
-}
-
-/**
  * 获取总帧数
  */
-function getFrame(path, startBlankCount, endBlankCount) {
-  let pathLength = path.length
-  // 开始前暂停5帧+蛇头从左上角到起始点帧数+方块内运动帧数+蛇尾从结束点到右下角帧数+蛇长4帧+结束后暂停5帧
-  return 14 + startBlankCount + endBlankCount + pathLength
+function getFrame(path) {
+  // 开始前暂停5帧+方块内运动帧数+蛇长4帧+结束后暂停5帧
+  return 14 + path.length
 }
 
 /**
  * 获取路径
  * @return [][] x,y,贡献级别
  */
-function getPath(array, startBlankCount, endBlankCount) {
+function getPath(array) {
   let arrayCopy = []
   for (let a of array) {
     arrayCopy.push([...a])
   }
   let path = []
-  let x
-  let y
-  let direction
+  let x, y, direction
   // 起始点
+  x = 0
   y = 0
-  x = startBlankCount
   direction = 'down'
   let level = arrayCopy[x][0]
   path.push([x, y, level])
@@ -308,8 +281,8 @@ function getPath(array, startBlankCount, endBlankCount) {
     }
   }
   // 结束点
+  x = 6
   y = 52
-  x = 6 - endBlankCount
   let pathLength = path.length
   let x1 = path[pathLength - 1][0]
   let y1 = path[pathLength - 1][1]
