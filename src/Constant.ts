@@ -1,4 +1,11 @@
 /**
+ * 常量
+ * @version 2023/07/19 11:11:11
+ * @author ALI[ali-k&#64;foxmail.com]
+ * @since 1.0.0
+ */
+
+/**
  * SVG头部
  */
 const svgHeader: string = `<svg width="758" height="130" viewBox="-10 -10 758 130" xmlns="http://www.w3.org/2000/svg">
@@ -28,7 +35,7 @@ const styleRootLight: string = `:root{--c0:#ebedf0;--c1:#9be9a8;--c2:#40c463;--c
  */
 const styleRootDark: string = `:root{--c0:#161b22;--c1:#0e4429;--c2:#006d32;--c3:#26a641;--c4:#39d353}`
 /**
- * 根样式
+ * 根样式-混合
  */
 const styleRoot: string = `${styleRootLight}@media(prefers-color-scheme:dark){${styleRootDark}}`
 

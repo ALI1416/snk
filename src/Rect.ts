@@ -1,4 +1,11 @@
 /**
+ * 方块
+ * @version 2023/07/19 11:11:11
+ * @author ALI[ali-k&#64;foxmail.com]
+ * @since 1.0.0
+ */
+
+/**
  * 获取方块标签
  * @param array 用户贡献级别数组
  * @return string 标签

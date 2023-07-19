@@ -1,10 +1,17 @@
 /**
+ * 贡献
+ * @version 2023/07/19 11:11:11
+ * @author ALI[ali-k&#64;foxmail.com]
+ * @since 1.0.0
+ */
+
+/**
  * 获取GitHub用户贡献级别
  * @param userName 用户名
  * @param year 年
  * @return number[7][53] 贡献级别数组
  */
-async function getGitHubContribution(userName: string, year?: number): Promise<number[][]> {
+async function getGitHubContribution(userName: string, year?: undefined | string): Promise<number[][]> {
   let url = `https://api.404z.cn/api/github/contribution/${userName}`
   if (typeof year !== 'undefined') {
     url += `?year=${year}`

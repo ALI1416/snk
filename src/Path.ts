@@ -1,4 +1,16 @@
 /**
+ * 路径
+ * @version 2023/07/19 11:11:11
+ * @author ALI[ali-k&#64;foxmail.com]
+ * @since 1.0.0
+ */
+
+/**
+ * 方向
+ */
+type Direction = 'up' | 'down' | 'left' | 'right'
+
+/**
  * 获取路径
  * @param array 用户贡献级别数组
  * @return number[][] x,y,贡献级别
@@ -54,11 +66,6 @@ function getPath(array: number[][]): number[][] {
   }
   return path
 }
-
-/**
- * 方向
- */
-type Direction = 'up' | 'down' | 'left' | 'right'
 
 /**
  * 获取中间路径(不包含起始点和结束点)
@@ -503,4 +510,4 @@ function getFrame(path: number[][]): number {
   return 14 + path.length
 }
 
-export {getPath, getFrame, Direction}
+export {getPath, getFrame}

@@ -1,4 +1,11 @@
 /**
+ * 蛇
+ * @version 2023/07/19 11:11:11
+ * @author ALI[ali-k&#64;foxmail.com]
+ * @since 1.0.0
+ */
+
+/**
  * 获取蛇路径
  * @param path 路径
  * @return number[][] x,y,帧数

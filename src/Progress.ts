@@ -1,4 +1,11 @@
 /**
+ * 进度条
+ * @version 2023/07/19 11:11:11
+ * @author ALI[ali-k&#64;foxmail.com]
+ * @since 1.0.0
+ */
+
+/**
  * 获取进度条路径
  * @param path 路径
  * @return number[][] 贡献级别,起始帧,帧数
@@ -51,7 +58,7 @@ function getProgressStyle(progressPath, frame, pathLength): string {
   let style: string = `.p{animation: none linear ${frame}00ms infinite}\n`
   let progressPathLength = progressPath.length
   for (let i = 0; i < progressPathLength; i++) {
-    style += `@keyframes p${i}{0%,${(100 * (5 + progressPath[i][1]) / frame).toFixed(2)}%{transform:scale(0,1)}${(100 * (5 + progressPath[i][1] + progressPath[i][2]) / frame).toFixed(2)}%,100%{transform:scale(1,1)}}.p${i}{fill:var(--c${progressPath[i][0]});animation-name:p${i};transform-origin: ${(738 * progressPath[i][1] / pathLength).toFixed(2)}px 0}\n`
+    style += `@keyframes p${i}{0%,${(100 * (5 + progressPath[i][1]) / frame).toFixed(2)}%{transform:scale(0,1)}${(100 * (5 + progressPath[i][1] + progressPath[i][2]) / frame).toFixed(2)}%,100%{transform:scale(1,1)}}.p${i}{fill:var(--c${progressPath[i][0]});animation-name:p${i};transform-origin:${(738 * progressPath[i][1] / pathLength).toFixed(2)}px 0}\n`
   }
   return style
 }
