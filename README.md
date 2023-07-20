@@ -12,6 +12,8 @@
 
 本项目参考了[Platane/snk](https://github.com/Platane/snk)，只保留了SVG图片，并对处理逻辑进行了大量优化，构建后`snk.min.js`文件仅`7kb`
 
+[在线示例](https://www.404z.cn/demo/snk.html)
+
 ## 依赖导入
 
 ### 网页

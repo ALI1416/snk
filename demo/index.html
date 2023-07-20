@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snk Demo</title>
+  <script src="https://unpkg.com/@ali1416/snk@1.0.0/dist/snk.min.js"></script>
+</head>
+
+<body>
+<label for="userName">用户名：</label><input type="text" id="userName" value="ali1416"><br>
+<label for="type">主题模式：</label><input type="number" min="0" max="2" id="type"><br>
+<label for="year">年：</label><input type="number" id="year"><br>
+<button id="generate">生成动画</button>
+<p id="tip"></p>
+<hr>
+<div id="svg"></div>
+<script>
+  const userName = document.getElementById('userName')
+  const type = document.getElementById('type')
+  const year = document.getElementById('year')
+  const tip = document.getElementById('tip')
+  const generate = document.getElementById('generate')
+  const svgTag = document.getElementById('svg')
+  let svg
+  generate.addEventListener('click', async function () {
+    try {
+      let userNameValue = userName.value
+      let typeValue = type.value === '' ? undefined : Number(type.value)
+      let yearValue = year.value === '' ? undefined : Number(year.value)
+      svg = await snk(userNameValue, typeValue, yearValue)
+      svgTag.innerHTML = svg
+    } catch (e) {
+      console.error(e)
+      tip.innerText += '\n' + e
+    }
+  })
+  generate.click()
+</script>
+</body>
+
+</html>
