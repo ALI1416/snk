@@ -14,6 +14,8 @@
 
 [在线示例](https://www.404z.cn/demo/snk.html)
 
+[API文档](https://api.404z.cn/)
+
 ## 依赖导入
 
 ### 网页
