@@ -12,7 +12,7 @@
  * @return number[7][53] 贡献级别数组
  */
 async function getGitHubContribution(userName: string, year?: undefined | string): Promise<number[][]> {
-  let url = `https://api.404z.cn/api/github/contribution/${userName}`
+  let url = `https://www.404z.cn/api/github/contribution/${userName}`
   if (typeof year !== 'undefined') {
     url += `?year=${year}`
   }

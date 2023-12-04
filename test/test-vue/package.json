@@ -9,11 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ali1416/snk": "^1.0.0",
-    "vue": "^3.2.47"
+    "@ali1416/snk": "^1.1.0",
+    "vue": "^3.3.9"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^4.1.0",
-    "vite": "^4.3.2"
+    "@vitejs/plugin-vue": "^4.5.1",
+    "vite": "^5.0.4"
   }
 }
