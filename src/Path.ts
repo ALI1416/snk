@@ -13,7 +13,7 @@ type Direction = 'up' | 'down' | 'left' | 'right'
 /**
  * 获取路径
  * @param array 用户贡献级别数组
- * @return number[][] x,y,贡献级别
+ * @return {number[][]} x,y,贡献级别
  */
 function getPath(array: number[][]): number[][] {
   let arrayCopy: number[][] = []
@@ -74,7 +74,7 @@ function getPath(array: number[][]): number[][] {
  * @param x2 x2
  * @param y2 y2
  * @param direction 方向
- * @return number[][] x,y
+ * @return {number[][]} x,y
  */
 function getIntermediatePath(x1: number, y1: number, x2: number, y2: number, direction: Direction): number[][] {
   let path: number[][] = []
@@ -302,7 +302,7 @@ function getIntermediatePath(x1: number, y1: number, x2: number, y2: number, dir
  * @param y1 y1
  * @param x2 x2
  * @param y2 y2
- * @return Direction 方向
+ * @return {Direction} 方向
  */
 function getDirection(x1: number, y1: number, x2: number, y2: number): Direction {
   if (x1 === x2) {
@@ -328,7 +328,7 @@ function getDirection(x1: number, y1: number, x2: number, y2: number): Direction
  * @param y y
  * @param distance 距离
  * @param direction 方向
- * @return number[] [] x,y,贡献级别
+ * @return {number[]} x,y,贡献级别
  */
 function getNextPoint(array: number[][], x: number, y: number, distance: number, direction: Direction): number[] {
   // 规则0：不能直接后退，必须绕道
@@ -393,7 +393,7 @@ function getNextPoint(array: number[][], x: number, y: number, distance: number,
  * @param y y
  * @param distance 距离
  * @param direction 方向
- * @return number[][] x,y
+ * @return {number[][]} x,y
  */
 function getPoint(x: number, y: number, distance: number, direction: Direction): number[][] {
   let array: number[][] = []
@@ -503,7 +503,7 @@ function getPoint(x: number, y: number, distance: number, direction: Direction):
 /**
  * 获取总帧数
  * @param path 路径
- * @return number 总帧数
+ * @return {number} 总帧数
  */
 function getFrame(path: number[][]): number {
   // 开始前暂停5帧+方块内运动帧数+蛇长4帧+结束后暂停5帧

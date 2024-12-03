@@ -8,9 +8,9 @@
 /**
  * 获取蛇路径
  * @param path 路径
- * @return number[][] x,y,帧数
+ * @return {number[][]} x,y,帧数
  */
-function getSnkPath(path): number[][] {
+function getSnkPath(path: number[][]): number[][] {
   let pathLength = path.length
   let snkPath: number[][] = []
   // 开始前暂停5帧
@@ -55,9 +55,9 @@ function getSnkPath(path): number[][] {
  * 获取蛇样式
  * @param snkPath 蛇路径
  * @param frame 帧数
- * @return string 样式
+ * @return {string} 样式
  */
-function getSnkStyle(snkPath, frame): string {
+function getSnkStyle(snkPath: number[][], frame: number): string {
   let style: string = `.s{shape-rendering:geometricPrecision;fill:#800080;animation:none linear ${frame}00ms infinite}\n`
   let snkPathLength = snkPath.length
   for (let j = 0; j < 4; j++) {

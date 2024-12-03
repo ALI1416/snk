@@ -1,6 +1,6 @@
 {
   "name": "@ali1416/snk",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "GitHub贡献图动画",
   "scripts": {
     "tsc": "npx tsc",
@@ -40,10 +40,10 @@
     "access": "public"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.2",
+    "@babel/core": "^7.26.0",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-terser": "^0.4.4",
-    "rollup": "^4.20.0",
-    "typescript": "^5.5.4"
+    "rollup": "^4.28.0",
+    "typescript": "^5.7.2"
   }
 }

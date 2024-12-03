@@ -22,7 +22,7 @@ import {SnkException} from './SnkException'
  *   <2 暗>
  *   <3 [混合,亮,暗]>
  * @param year 年(默认一年前)
- * @return string|string[] SVG
+ * @return {Promise<string | string[]>} SVG
  */
 async function snk(userName: string, type?: undefined | number, year?: undefined | string): Promise<string | string[]> {
   if (typeof type === 'undefined') {

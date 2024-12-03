@@ -18,12 +18,12 @@
 
 ### 网页
 
-<https://unpkg.com/@ali1416/snk@1.1.0/dist/snk.min.js>
+<https://unpkg.com/@ali1416/snk/dist/snk.min.js>
 
 ### node
 
 ```sh
-npm install @ali1416/snk@1.1.0
+npm install @ali1416/snk
 ```
 
 ## 方法和参数

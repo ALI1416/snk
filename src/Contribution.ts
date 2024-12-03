@@ -9,7 +9,7 @@
  * 获取GitHub用户贡献级别
  * @param userName 用户名
  * @param year 年
- * @return number[7][53] 贡献级别数组
+ * @return {Promise<number[][]>} 贡献级别数组[7][53]
  */
 async function getGitHubContribution(userName: string, year?: undefined | string): Promise<number[][]> {
   let url = `https://www.404z.cn/api/github/contribution/${userName}`

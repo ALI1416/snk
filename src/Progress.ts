@@ -8,9 +8,9 @@
 /**
  * 获取进度条路径
  * @param path 路径
- * @return number[][] 贡献级别,起始帧,帧数
+ * @return {number[][]} 贡献级别,起始帧,帧数
  */
-function getProgressPath(path): number[][] {
+function getProgressPath(path: number[][]): number[][] {
   let pathLength = path.length
   let progressPath: number[][] = []
   // 0级
@@ -36,9 +36,9 @@ function getProgressPath(path): number[][] {
  * 获取进度条标签
  * @param progressPath 进度条路径
  * @param pathLength 路径长度
- * @return string 标签
+ * @return {string} 标签
  */
-function getProgressTag(progressPath, pathLength): string {
+function getProgressTag(progressPath: number[][], pathLength: number): string {
   let tag: string = ''
   let progressPathLength = progressPath.length
   for (let i = 0; i < progressPathLength; i++) {
@@ -52,9 +52,9 @@ function getProgressTag(progressPath, pathLength): string {
  * @param progressPath 进度条路径
  * @param frame 帧数
  * @param pathLength 路径长度
- * @return string 样式
+ * @return {string} 样式
  */
-function getProgressStyle(progressPath, frame, pathLength): string {
+function getProgressStyle(progressPath: number[][], frame: number, pathLength: number): string {
   let style: string = `.p{animation: none linear ${frame}00ms infinite}\n`
   let progressPathLength = progressPath.length
   for (let i = 0; i < progressPathLength; i++) {

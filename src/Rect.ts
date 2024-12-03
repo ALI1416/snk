@@ -8,9 +8,9 @@
 /**
  * 获取方块标签
  * @param array 用户贡献级别数组
- * @return string 标签
+ * @return {string} 标签
  */
-function getRectTag(array): string {
+function getRectTag(array: number[][]): string {
   let tag: string = ''
   for (let i = 0; i < 7; i++) {
     for (let j = 0; j < 53; j++) {
@@ -32,9 +32,9 @@ function getRectTag(array): string {
  * 获取方块样式
  * @param path 路径
  * @param frame 帧数
- * @return string 样式
+ * @return {string} 样式
  */
-function getRectStyle(path, frame): string {
+function getRectStyle(path: number[][], frame: number): string {
   let style: string = `.c{shape-rendering:geometricPrecision;fill:var(--c0);stroke-width:1px;stroke:rgba(27,31,35,0.06);animation:none linear ${frame}00ms infinite}\n`
   let pathLength = path.length
   for (let i = 0; i < pathLength; i++) {
